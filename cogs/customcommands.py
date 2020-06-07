@@ -1,7 +1,4 @@
-import discord
 from discord.ext import commands
-
-from config import PREFIX
 
 
 class CustomCommands(commands.Cog):

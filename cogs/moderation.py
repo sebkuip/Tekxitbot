@@ -1,9 +1,5 @@
-import sys
-from discord.ext import commands
 import discord
-import asyncio
-import typing
-import json
+from discord.ext import commands
 
 
 class moderation(commands.Cog):
