@@ -1,0 +1,7 @@
+>>> :exclamation: To find out what version of **Java** you are using please follow these steps!
+~~**--------------------------------------**~~
+1. Open **CMD**
+2. Type **java -version**
+3. Press **Enter**
+4. Paste the **Entire** result here
+:heart: Something not working? Ask **Staff** for further support!

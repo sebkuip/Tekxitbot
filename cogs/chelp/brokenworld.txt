@@ -1,0 +1,18 @@
+>>> :exclamation: Make sure you make frequent back-ups of your world files!
+**We don't guarantee that we will fix worlds but we will try if possible!**
+~~**--------------------------------------**~~
+** Client - Singleplayer World **
+1. Open the **Technic Launcher**
+2. Click on the **Tekxit 3 Modpack** (Do not Launch it!)
+3. Go to **Modpack Options** (Top Right)
+4. Click on **Open**
+5. Open the folder **saves**
+6. Locate the broken world folder by the name
+7. **Zip or Rar it** and upload it to **Dropbox or something similar**
+8. DM the **download link** to @Ad-Blokker#2537, he will take a look at it when he has time
+~~**--------------------------------------**~~
+** Server - Multiplayer World**
+1. Go to the location where you stored the server files
+2. Locate the world folder (the standard name is "world")
+3. **Zip or Rar it** and upload it to **Dropbox or something similar**
+4. DM the **download link** to @Ad-Blokker#2537, he will take a look at it when he has time

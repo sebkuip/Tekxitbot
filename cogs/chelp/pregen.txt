@@ -1,0 +1,16 @@
+>>> How to Pre-generate a 10k block radius (Square) world:
+~~**--------------------------------------**~~
+Download: https://www.curseforge.com/minecraft/mc-mods/chunkpregenerator
+Add this mod to mods folder in the server files
+
+:exclamation:During pregenning you can't play on the server:exclamation:
+
+Once you added the mod and started the server, run these commands in the server console:
+```/pregen utils setPriority pregenerator
+/pregen timepertick 250
+/pregen gen startradius square 0 0 b10000```
+
+:exclamation:If you have low ram you can replace the last line you run with this:exclamation:
+```/pregen gen startmassradius square 0 0 b10000 100```
+
+Once finished, restart your server.

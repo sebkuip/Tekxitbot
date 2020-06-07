@@ -1,0 +1,20 @@
+>>> :exclamation: The prefix for Official Tekxit Discord is **//**
+~~**--------------------------------------**~~
+**Commands**
+1. __RAM__ - Provides info about how to **increase RAM**
+2. __Mods__ - Provides a full **mods list**
+3. __iMods__ - Provides  info about how to **install extra mods**
+4. __Crashlog__ - Provides info about how to find the **crash-logs**
+5. __Convert__ - Provides info about how to **convert to different energy types**
+5. __Report__ - **WIP, please do not use** (you can but it won't do anything)
+6. __MultiMC__ - Provides info on how to install **Tekxit 3 using MultiMC**
+7. __Latestlog__ - Provides info on how to **retrieve the latest.log**
+8. __Java__ - Provides info on how to get the latest Java version
+9. __Server__ - Redirects people to the **right channel for servers**
+10. __Brokenworld__ - Provides information when your **world is corrupted**
+11. __Optifine__ - Provides info on how **to get Optifine**
+12. __ManualInstall__ - Provides info on how to **manually install Tekxit 3**
+13. __Serversetup__ - Provides info on how to **set up a tekxit server**
+14. __Downgrade__ - Provides info on how to **downgrade to the previous version**
+15. __CMD__ - Provides info on how to check Java version present on the machine
+16. __Pregen__ - Provides info on **how to pregen a world**
