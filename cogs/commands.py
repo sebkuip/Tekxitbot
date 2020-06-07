@@ -1,9 +1,8 @@
-import asyncio
+import random
+import typing
 
 import discord
 from discord.ext import commands
-import typing
-import random
 
 
 class Commands(commands.Cog):
@@ -47,7 +46,7 @@ class Commands(commands.Cog):
     @commands.has_permissions(mention_everyone=True)
     async def someone(self, ctx):
         members = ctx.guild.members
-        embed = discord.Embed(title=f'@someone', description=random.choice(ctx.guild.members).mention())
+        embed = discord.Embed(title=f'@someone', description=random.choice(members).mention())
         await ctx.send(embed=embed)
 
 

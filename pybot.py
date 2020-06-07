@@ -35,6 +35,7 @@ async def on_ready():
 @bot.event
 async def on_message(message):
     if message.content.startswith(PREFIX):
+        # noinspection PyBroadException
         try:
             command = message.content.strip(PREFIX)
             with open(f'cogs/chelp/{command}.txt', 'r') as f:
@@ -56,9 +57,9 @@ async def reload(ctx, name):
     try:
         bot.load_extension(f'cogs.{name}')
         await ctx.send(f'reloaded cog {name}')
-    except Exception as e:
+    except Exception as error:
         print(f"Failed to load extension {extension}.")
-        print(e)
+        print(error)
 
 
 initial_extensions = [

@@ -13,7 +13,8 @@ class Members(commands.Cog):
         channel = self.bot.get_channel(JOINCHANNEL)
         if channel is not None:
             embed = discord.Embed(title=None, description=f':heart: Welcome {member.mention}!\n'
-                                                          'We now have {self.bot.get_guild(GUILDID).member_count} members'
+                                                          'We now have {self.bot.get_guild(GUILDID).member_count} '
+                                                          'members '
                                                           '\nBe sure to check <#606795102987223051>\n'
                                                           'Hope you enjoy your stay :Heart3:',
                                   colour=discord.Color.dark_purple())

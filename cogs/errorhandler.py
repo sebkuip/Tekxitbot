@@ -1,8 +1,5 @@
-import traceback
-import sys
-from discord.ext import commands
 import discord
-import asyncio
+from discord.ext import commands
 
 
 class ErrorHandler(commands.Cog):
