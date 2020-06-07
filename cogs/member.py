@@ -13,10 +13,10 @@ class Members(commands.Cog):
         channel = self.bot.get_channel(JOINCHANNEL)
         if channel is not None:
             embed = discord.Embed(title=None, description=f':heart: Welcome {member.mention}!\n'
-                                                          'We now have {self.bot.get_guild(GUILDID).member_count} '
-                                                          'members '
-                                                          '\nBe sure to check <#606795102987223051>\n'
-                                                          'Hope you enjoy your stay :Heart3:',
+                                                          f'We now have {self.bot.get_guild(GUILDID).member_count} '
+                                                          f'members '
+                                                          f'\nBe sure to check <#606795102987223051>\n'
+                                                          f'Hope you enjoy your stay :Heart3:',
                                   colour=discord.Color.dark_purple())
             await channel.send(embed=embed)
             message = await channel.send(member.mention)
@@ -26,7 +26,7 @@ class Members(commands.Cog):
     async def on_member_remove(self, member):
         channel = self.bot.get_channel(GUILDID)
         if channel is not None:
-            await channel.send(str(member) + ' just left the server :slight_frown:')
+            await channel.send(f'{member}just left the server :slight_frown:')
 
 
 def setup(bot):

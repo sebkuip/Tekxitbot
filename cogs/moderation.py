@@ -24,8 +24,8 @@ class moderation(commands.Cog):
         embed.remove_field(0)
         embed.insert_field_at(0, name=f'**GOT KICKED BY**', value=ctx.author.mention, inline=False)
         await ctx.send(embed=embed)
-        ctx.message.delete()
-        channel = self.bot.fetch_channel(425632491622105088)
+        await ctx.message.delete()
+        channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
 
     @commands.command(help='Bans the specified member for the specified reason')
@@ -47,7 +47,7 @@ class moderation(commands.Cog):
         embed.insert_field_at(0, name=f'**GOT BANNED BY**', value=ctx.author.mention, inline=False)
         await ctx.send(embed=embed)
         await ctx.message.delete()
-        channel = self.bot.fetch_channel(425632491622105088)
+        channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
 
 
