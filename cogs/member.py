@@ -1,4 +1,3 @@
-import discord
 from discord.ext import commands
 
 from config import *
@@ -12,18 +11,17 @@ class Members(commands.Cog):
     async def on_member_join(self, member):
         channel = self.bot.get_channel(JOINCHANNEL)
         if channel is not None:
-            embed = discord.Embed(title=None, description=f':heart: Welcome {member.mention}!\n'
-                                                          f'We now have {self.bot.get_guild(GUILDID).member_count} '
-                                                          f'members '
-                                                          f'\nBe sure to check <#606795102987223051>\n'
-                                                          f'Hope you enjoy your stay :Heart3:',
-                                  colour=discord.Color.dark_purple())
-            await channel.send(embed=embed)
-            message = await channel.send(member.mention)
+            message = channel.send(f':heart: Welcome {member.mention}!\n'
+                                   f'We now have {self.bot.get_guild(GUILDID).member_count} '
+                                   f'members '
+                                   f'\nBe sure to check <#606795102987223051>\n'
+                                   f'Hope you enjoy your stay :Heart3:'
             await message.delete()
 
-    @commands.Cog.listener()
-    async def on_member_remove(self, member):
+            @ commands.Cog.listener()
+            async
+
+            def on_member_remove(self, member):
         channel = self.bot.get_channel(GUILDID)
         if channel is not None:
             await channel.send(f'{member}just left the server :slight_frown:')
