@@ -16,15 +16,14 @@ class Members(commands.Cog):
                                    f'members '
                                    f'\nBe sure to check <#606795102987223051>\n'
                                    f'Hope you enjoy your stay :Heart3:'
-            await message.delete()
 
-            @ commands.Cog.listener()
-            async
+                                   @ commands.Cog.listener()
+                                   async
 
-            def on_member_remove(self, member):
-                channel = self.bot.get_channel(GUILDID)
-                if channel is not None:
-                    await channel.send(f'{member}just left the server :slight_frown:')
+    def on_member_remove(self, member):
+        channel = self.bot.get_channel(GUILDID)
+        if channel is not None:
+            await channel.send(f'{member}just left the server :slight_frown:')
 
 
 def setup(bot):
