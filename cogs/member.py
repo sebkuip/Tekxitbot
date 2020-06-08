@@ -11,7 +11,7 @@ class Members(commands.Cog):
     async def on_member_join(self, member):
         channel = self.bot.get_channel(JOINCHANNEL)
         if channel is not None:
-            message = await channel.send(f':heart: Welcome {member.mention}!\n'
+            message = await channel.send(f'>>>:heart: Welcome {member.mention}!\n'
                                          f'We now have {self.bot.get_guild(GUILDID).member_count} '
                                          f'members '
                                          f'\nBe sure to check <#606795102987223051>\n'
