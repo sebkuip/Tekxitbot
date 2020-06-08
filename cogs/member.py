@@ -15,7 +15,7 @@ class Members(commands.Cog):
                                          f'We now have {self.bot.get_guild(GUILDID).member_count} '
                                          f'members '
                                          f'\nBe sure to check <#606795102987223051>\n'
-                                         f'Hope you enjoy your stay :Heart3:')
+                                         f'Hope you enjoy your stay <:Heart3:719554304838729738>')
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
