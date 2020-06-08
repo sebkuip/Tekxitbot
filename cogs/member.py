@@ -23,7 +23,7 @@ class Members(commands.Cog):
     async def on_member_remove(self, member):
         channel = self.bot.get_channel(JOINCHANNEL)
         if channel is not None:
-            await channel.send(f'{member} just left the server :slight_frown:')
+            await channel.send(f'***{member}*** just left the server :slight_frown:')
 
 
 def setup(bot):
