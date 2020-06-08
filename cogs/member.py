@@ -12,7 +12,7 @@ class Members(commands.Cog):
     async def on_member_join(self, member):
         channel = self.bot.get_channel(JOINCHANNEL)
         if channel is not None:
-            emoji = discord.utils.get(channel.guild.emoji, name='Heart3')
+            emoji = discord.utils.get(channel.guild.emojis, name='Heart3')
             message = await channel.send(f'>>> :heart: Welcome {member.mention}!\n'
                                          f'We now have {self.bot.get_guild(GUILDID).member_count} '
                                          f'members '
