@@ -1,0 +1,20 @@
+>>> :exclamation: **If you want to add mods to Tekxit 3 follow these steps!** (Adding Mods is not Recommended!)
+:exclamation: **Keep in mind that we do not support clients with extra mods so if something is wrong it's your own fault and you should try to remove the extra mods first**
+~~**--------------------------------------**~~
+**Safe Way** (Recommended)
+:exclamation: **Warning! Only Client-side Mods will work on the Official Servers.**
+1. Open the **Technic Launcher**
+2. Click on the **Tekxit 3 Modpack** (Do not Launch it!)
+3. Go to **Modpack Options** (Top Right)
+4. Click on **Open**  
+5. Open **Mods ** 
+6. Drop the** Mod** into the **Mods Folder**
+~~**--------------------------------------**~~
+**Manual Way** (Not Recommended) 
+:exclamation: **Warning! Only Client-side Mods will work on the Official Servers.**
+1. Go to **%Appdata%**
+2. Open **.technic**
+3. Open **Modpacks**
+4. Open **tekxit-3-official-1122**
+5. Open **Mods ** 
+6. Drop the** Mod** into the **Mods Folder**

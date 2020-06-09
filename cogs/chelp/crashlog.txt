@@ -1,0 +1,18 @@
+>>> :exclamation:** To find your Crashlog follow these steps!**
+~~**--------------------------------------**~~
+**Easiest Way**
+1. Open the **Technic Launcher**
+2. Click on the **Tekxit 3 Modpack **(Do not Launch it!)
+3. Go to **Modpack Options **(Top Right)
+4. Click on **Open**
+5. Open **Crash-Reports** 
+6. Find the most **Recent File**
+~~**--------------------------------------**~~
+**Manual Way**
+1. Go to **%Appdata%**
+2. Open** .technic**
+3. Open **Modpacks**
+4. Open **tekxit-3-official-1122**
+5. Open **Crash-Reports**   
+6. Find the most **Recent File**
+:heart: Still can't find it? Ask **Staff** for further support!

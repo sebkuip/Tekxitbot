@@ -1,0 +1,13 @@
+>>> :exclamation: If you have trouble using the modpack via Technic Launcher, follow those instructions on how to get Tekxit 3 on the** MultiMC **platform!
+~~**--------------------------------------**~~
+1. **Download and extract MultiMC **at https://multimc.org
+2. Open the MultiMC folder you extracted and click **"MultiMC.exe" **to start it 
+3. **Download **https://www.tekx.it/downloads/Tekxit-3-v0.972-MultiMC.zip
+4. In MultiMC **Click:**
+► Add Instance 
+► Import from zip 
+► Browse, pick the downloaded Tekxit zip
+► Click OK
+5. Play and have fun
+The technic and multiMC packs are the same. This means you can play together without issues.
+:exclamation: When a **new update for Tekxit **is released you need to **import the new multimc zip** and copy over the saves folder to keep your singleplayer worlds

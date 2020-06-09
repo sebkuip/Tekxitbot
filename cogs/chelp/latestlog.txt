@@ -1,0 +1,22 @@
+>>> :exclamation: **To find your Latest.log follow these steps!**
+~~**--------------------------------------**~~
+**Easiest Way (recommended)**
+1. Open the **Technic Launcher**
+2. Click on the **Tekxit 3 Modpack** (Do not Launch it!)
+3. Go to **Modpack Options** (Top Right)
+4. Click on **Open**
+5. Open the folder **Logs**
+6. Find the **Latest.log** File
+7. Send it in the discord channel 
+(When the file is too big, zip it or upload it Dropbox or something similar)
+~~**--------------------------------------**~~
+**Manual Way**
+1. Go to **%Appdata%**
+2. Open **.technic**
+3. Open **Modpacks**
+4. Open **tekxit-3-official-1122**
+5. Open **Logs**
+6. Find the **Latest.log** File
+7. Send it in the discord channel
+(When the file is too big, zip it or upload it Dropbox or something similar)
+:heart: Still can't find it? Ask **Staff** for further support!
