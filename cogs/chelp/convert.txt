@@ -4,7 +4,7 @@
 1. Replace :battery: With the right Unit of Power,
 **>IC2C**= LV,MV,HV,EV,IV
 **>Buildcraft**= MJ
-**>EnderIO, Industrial Foregoing, Thermal Expansion**= FE (RF) but use FE
+**>EnderIO, Industrial Foregoing, Thermal Expansion, GalaticCraft**= FE (RF) but use FE
 **>AE2**= Use the Energy Acceptor provided by AE2 itself.
 :grey_exclamation: **__Side Note__** :grey_exclamation:
 **IC2C to FE/RF = use a Flux Generator itself.**
