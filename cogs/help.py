@@ -22,7 +22,7 @@ class Help(commands.Cog):
     async def info(self, ctx):
         embed = discord.Embed(title='Info menu', description='Info about the bot', color=discord.Color.blurple())
         embed.add_field(name='Creator', value=self.bot.get_user(234649992357347328).mention, inline=False)
-        embed.add_field(name='Ping', value=str(round(self.bot.latency, 4) * 100) + 'ms', inline=False)
+        embed.add_field(name='Ping', value=str(round(self.bot.latency, 5) * 1000) + 'ms', inline=False)
         await ctx.send(embed=embed)
 
 

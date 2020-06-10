@@ -11,7 +11,7 @@ class Commands(commands.Cog):
 
     @commands.command(help='Shows the latency of the bot')
     async def ping(self, ctx):
-        await ctx.send(f'My ping is ' + str(round(self.bot.latency, 4) * 100) + 'ms')
+        await ctx.send(f'My ping is ' + str(round(self.bot.latency, 5) * 1000) + 'ms')
 
     @commands.command(help='Allows you to talk as the bot in the specified channel or current if non is specified')
     @commands.has_permissions(administrator=True)
