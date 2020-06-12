@@ -47,7 +47,6 @@ async def on_ready():
 @bot.event
 async def on_message(message):
     if message.content.startswith(PREFIX):
-        # noinspection PyBroadException
         try:
             command = message.content.strip(PREFIX)
             with open(f'cogs/chelp/{command}.txt', 'r') as f:
