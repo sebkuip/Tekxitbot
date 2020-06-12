@@ -28,8 +28,11 @@ class moderation(commands.Cog):
         except discord.Forbidden:
             await ctx.send('Could not send DM to user')
         await member.kick(reason=reason)
-        self.cur.execute(f"INSERT INTO kicks(uid, executor, timedate, reason) VALUES({member.id}, {ctx.author}, "
-                         f"CURRENT_TIMESTAMP(1), {reason}")
+        try:
+            self.cur.execute(f"INSERT INTO kicks(uid, executor, timedate, reason) VALUES({member.id}, {ctx.author}, "
+                             f"CURRENT_TIMESTAMP(1), {reason}")
+        except Exception as error:
+            print(error)
         embed.remove_field(0)
         embed.remove_field(0)
         embed.insert_field_at(0, name=f'**GOT KICKED BY**', value=ctx.author.mention, inline=False)
