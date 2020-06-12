@@ -47,7 +47,7 @@ class moderation(commands.Cog):
     async def ban(self, ctx, member: discord.Member, *, reason=None):
         embed = discord.Embed(color=discord.Color.red())
         embed.set_author(name=str(member), icon_url=member.avatar_url)
-        embed.add_field(name=f'**YOU GOT BANNED FROM', value=f'```{ctx.guild.name}```', inline=False)
+        embed.add_field(name=f'**YOU GOT BANNED FROM**', value=f'```{ctx.guild.name}```', inline=False)
         embed.add_field(name=f'**BY**', value=ctx.author.mention, inline=False)
         if reason:
             embed.add_field(name=f'**FOR THE REASON**', value=f'`{reason}`', inline=False)
@@ -69,7 +69,7 @@ class moderation(commands.Cog):
     async def warn(self, ctx, member: discord.Member, *, reason=None):
         embed = discord.Embed(color=discord.Color.red())
         embed.set_author(name=str(member), icon_url=member.avatar_url)
-        embed.add_field(name=f'**YOU GOT WARNED IN', value=f'```{ctx.guild.name}```', inline=False)
+        embed.add_field(name=f'**YOU GOT WARNED IN**', value=f'```{ctx.guild.name}```', inline=False)
         embed.add_field(name=f'**BY**', value=ctx.author.mention, inline=False)
         if reason:
             embed.add_field(name=f'**FOR THE REASON**', value=f'`{reason}`', inline=False)
