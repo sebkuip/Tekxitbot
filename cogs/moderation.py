@@ -29,7 +29,7 @@ class moderation(commands.Cog):
             await ctx.send('Could not send DM to user')
         await member.kick(reason=reason)
         try:
-            self.cur.execute(f"INSERT INTO kicks(uid, executor, timedate, reason) VALUES({member.id}, '{ctx.author}', "
+            self.cur.execute(f"INSERT INTO kicks(uid, executor, timedate, reason) VALUES({member.id}, {ctx.author.id}, "
                              f"CURRENT_TIMESTAMP(1), '{reason}')")
             self.conn.commit()
         except Exception as error:
