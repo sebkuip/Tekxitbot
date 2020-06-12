@@ -29,8 +29,8 @@ async def on_ready():
     # database
     print('Connecting to database')
     try:
-        conn = psycopg2.connect(host="45.9.63.23", port="5432", database="tekxitbot", user="sebkuip",
-                                password="tekxitbot1234")
+        conn = psycopg2.connect(host=HOST, port=PORT, database=DATABASE, user=USER,
+                                password=PASSWORD)
         cur = conn.cursor()
         cur.execute('SELECT version()')
         db_version = cur.fetchone()
