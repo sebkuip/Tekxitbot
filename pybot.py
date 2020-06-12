@@ -3,9 +3,9 @@ import asyncio
 import logging
 
 import discord
-from discord.ext import commands
-
+import psycopg2
 from config import *
+from discord.ext import commands
 
 bot = commands.Bot(command_prefix=PREFIX)
 bot.remove_command('help')
@@ -25,6 +25,18 @@ async def on_ready():
     print(f'Keep this window open to keep the bot running.')
     await bot.change_presence(
         activity=discord.Activity(type=discord.ActivityType.listening, name=f"your commands beginning with {PREFIX}"))
+
+    # database
+    print('Connecting to database')
+    try:
+        conn = psycopg2.connect(host=HOST, port=PORT, database=DATABASE, user=USER,
+                                password=PASSWORD)
+        cur = conn.cursor()
+        cur.execute('SELECT version()')
+        db_version = cur.fetchone()
+        print(f'Database version: PostgreSQL {db_version}')
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
 
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
