@@ -30,7 +30,7 @@ class moderation(commands.Cog):
         await member.kick(reason=reason)
         try:
             self.cur.execute(f"INSERT INTO kicks(uid, executor, timedate, reason) VALUES({member.id}, {ctx.author}, "
-                             f"CURRENT_TIMESTAMP(1), {reason}")
+                             f"CURRENT_TIMESTAMP(1), {reason})")
         except Exception as error:
             print(error)
         embed.remove_field(0)
