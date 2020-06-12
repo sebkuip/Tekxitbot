@@ -97,7 +97,7 @@ class moderation(commands.Cog):
     async def infractions(self, ctx, member: discord.Member):
         try:
             embed = discord.Embed(description='Infractions:')
-            self.cur.execute("SELECT * FROM warns WHERE uid LIKE %s", (member.id,))
+            self.cur.execute("SELECT * FROM warnings WHERE uid LIKE %s", (member.id,))
             warns = self.cur.fetchall()
             self.cur.execute("SELECT * FROM kicks WHERE uid LIKE %s", (member.id,))
             kicks = self.cur.fetchall()
