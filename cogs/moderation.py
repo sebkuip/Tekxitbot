@@ -1,10 +1,18 @@
 import discord
+import psycopg2
+from config import *
 from discord.ext import commands
 
 
 class moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot  # This is the bot instance, it lets us interact with most things
+        try:
+            self.conn = psycopg2.connect(host=HOST, port=PORT, database=DATABASE, user=USER,
+                                         password=PASSWORD)
+            self.cur = self.conn.cursor()
+        except (Exception, psycopg2.DatabaseError) as error:
+            pass
 
     @commands.command(help='Kicks the specified member for the specified reason')
     @commands.has_permissions(kick_members=True)
@@ -20,6 +28,12 @@ class moderation(commands.Cog):
         except discord.Forbidden:
             await ctx.send('Could not send DM to user')
         await member.kick(reason=reason)
+        try:
+            self.cur.execute(f"INSERT INTO kicks(uid, executor, timedate, reason) VALUES({member.id}, '{ctx.author}', "
+                             f"CURRENT_TIMESTAMP(1), '{reason}')")
+            self.conn.commit()
+        except Exception as error:
+            print(error)
         embed.remove_field(0)
         embed.remove_field(0)
         embed.insert_field_at(0, name=f'**GOT KICKED BY**', value=ctx.author.mention, inline=False)
