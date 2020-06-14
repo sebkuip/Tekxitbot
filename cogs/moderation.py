@@ -1,7 +1,8 @@
 import discord
 import psycopg2
-from config import *
 from discord.ext import commands
+
+from config import *
 
 
 class moderation(commands.Cog):
@@ -29,8 +30,8 @@ class moderation(commands.Cog):
             await ctx.send('Could not send DM to user')
         await member.kick(reason=reason)
         try:
-            self.cur.execute(f"INSERT INTO kicks(uid, executor, timedate, reason) VALUES({member.id}, {ctx.author.id}, "
-                             f"CURRENT_TIMESTAMP(1), '{reason}')")
+            self.cur.execute("INSERT INTO kicks(uid, executor, timedate, reason) VALUES(%s, %s, "
+                             "CURRENT_TIMESTAMP(1), %s)", (member.id, ctx.author.id, reason))
             self.conn.commit()
         except Exception as error:
             print(error)
@@ -85,8 +86,8 @@ class moderation(commands.Cog):
         channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
         try:
-            self.cur.execute(f"INSERT INTO warnings(uid, executor, timedate, reason) VALUES({member.id}, "
-                             f"{ctx.author.id}, CURRENT_TIMESTAMP(1), '{reason}')")
+            self.cur.execute("INSERT INTO warnings(uid, executor, timedate, reason) VALUES(%s, "
+                             "%s, CURRENT_TIMESTAMP(1), %s)", (member.id, ctx.author.id, reason))
             self.conn.commit()
         except Exception as error:
             print(error)
