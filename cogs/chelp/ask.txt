@@ -1,0 +1,8 @@
+>>> :exclamation: **How to ask a good question**
+**--------------------------------------**
+1. **Don't ask to ask** just post your question/problem.
+2. **Use the correct channel** If you scroll down you should see a tekxit 2 and 3 category. Each with their own modpack and tech support channel.
+3. **Don't filter with 'Does anyone here know about ....`** If someone doesn't know, they won't answer. No need to already try to filter out.
+4. **Provide as much information as possible** If you have logs/screenshots/videos, why not just post them straight away?
+5. **Be patient** Don't go around pinging people or sending your issue multiple times. We'll get to you when we have time.
+:heart: Still have questions? Ask **staff** for further support!
