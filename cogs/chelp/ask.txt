@@ -1,5 +1,5 @@
 >>> :exclamation: **How to ask a good question**
-**--------------------------------------**
+~~**--------------------------------------**~~
 1. **Don't ask to ask** just post your question/problem.
 2. **Use the correct channel** If you scroll down you should see a tekxit 2 and 3 category. Each with their own modpack and tech support channel.
 3. **Don't filter with 'Does anyone here know about ....`** If someone doesn't know, they won't answer. No need to already try to filter out.
