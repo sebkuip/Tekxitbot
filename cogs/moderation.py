@@ -104,9 +104,8 @@ class moderation(commands.Cog):
             self.cur.execute("SELECT * FROM bans WHERE uid = %s", (member.id,))
             bans = self.cur.fetchall()
             embed.set_author(name=str(member), icon_url=member.avatar_url)
-            embed.add_field(name='warnings', value=','.join(warns), inline=False)
-            embed.add_field(name='kicks', value=','.join(kicks), inline=False)
-            embed.add_field(name='bans', value=','.join(bans), inline=False)
+            for warn in warns:
+                embed.add_field(name='Warnings:', value = 'Whatever')
             ctx.send(embed=embed)
         except Exception as error:
             print(error)
