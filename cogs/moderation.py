@@ -96,7 +96,7 @@ class moderation(commands.Cog):
     @commands.has_permissions(manage_messages=True)
     async def infractions(self, ctx, member: discord.Member):
         try:
-            embed = discord.Embed(description='Infractions:')
+            embed = discord.Embed(color=0xb277dd)
             self.cur.execute("SELECT * FROM warnings WHERE uid = %s", (member.id,))
             warns = self.cur.fetchall()
             self.cur.execute("SELECT * FROM kicks WHERE uid = %s", (member.id,))
@@ -104,9 +104,31 @@ class moderation(commands.Cog):
             self.cur.execute("SELECT * FROM bans WHERE uid = %s", (member.id,))
             bans = self.cur.fetchall()
             embed.set_author(name=str(member), icon_url=member.avatar_url)
+            # warnings
+            embed.add_field(name='\u200b', value='Warnings:', inline=False)
             for warn in warns:
-                embed.add_field(name='Warnings:', value = 'Whatever')
-            ctx.send(embed=embed)
+                invoker = await self.bot.fetch_user(warn[2])
+                datetime = str(warn[3])[0:-7]
+                embed.add_field(name='ID: ' + str(warn[0]),
+                                value=f'When: {datetime} UTC\nExecutor: {invoker}\nReason: {warn[4]}', inline=False)
+            # kicks
+            embed.add_field(name='\u200b', value='Kicks:', inline=False)
+            for kick in kicks:
+                invoker = await self.bot.fetch_user(kick[2])
+                datetime = str(kick[3])[0:-7]
+                embed.add_field(name='ID: ' + str(kick[0]),
+                                value=f'When: {datetime} UTC\nExecutor: {invoker}\nReason: {kick[4]}', inline=False)
+            # bans
+            embed.add_field(name='\u200b', value='Bans:', inline=False)
+            for ban in bans:
+                invoker = await self.bot.fetch_user(ban[2])
+                datetime = str(ban[3])[0:-7]
+                if ban[4]:
+                    enddatetime = str(ban[5])
+                embed.add_field(name='ID: ' + str(ban[0]),
+                                value=f'When: {datetime} UTC\nExecutor: {invoker}\nReason: {ban[6]}\nTemporary: {ban[4]}\nend: {enddatetime}',
+                                inline=False)
+            await ctx.send(embed=embed)
         except Exception as error:
             print(error)
 
