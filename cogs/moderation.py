@@ -92,6 +92,24 @@ class moderation(commands.Cog):
         except Exception as error:
             print(error)
 
+    @commands.command(help='View all infractions for a user')
+    @commands.has_permissions(manage_messages=True)
+    async def infractions(self, ctx, member: discord.Member):
+        try:
+            embed = discord.Embed(description='Infractions:')
+            self.cur.execute("SELECT * FROM warnings WHERE uid = %s", (member.id,))
+            warns = self.cur.fetchall()
+            self.cur.execute("SELECT * FROM kicks WHERE uid = %s", (member.id,))
+            kicks = self.cur.fetchall()
+            self.cur.execute("SELECT * FROM bans WHERE uid = %s", (member.id,))
+            bans = self.cur.fetchall()
+            embed.set_author(name=str(member), icon_url=member.avatar_url)
+            for warn in warns:
+                embed.add_field(name='Warnings:', value = 'Whatever')
+            ctx.send(embed=embed)
+        except Exception as error:
+            print(error)
+
 
 def setup(bot):
     bot.add_cog(moderation(bot))
