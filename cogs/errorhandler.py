@@ -24,7 +24,8 @@ class ErrorHandler(commands.Cog):
         elif isinstance(error, commands.BadArgument):
             embed.add_field(name=f'**BadArgument**',
                             value=f'Looks like you entered a wrong argument. Please check carefully. Maybe the '
-                                  f'channel or user does not exist?')
+                                  f'channel or user does not exist?\nIf this was an infraction, please manually add '
+                                  f'the infraction to the database.')
         elif isinstance(error, commands.MissingRequiredArgument):
             embed.add_field(name=f'**MissingRequiredArgument**',
                             value=f'Looks like you forgot to enter an argument for this command.')
