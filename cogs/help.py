@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 
+from config import *
+
 
 class Help(commands.Cog):
     def __init__(self, bot):
@@ -9,7 +11,7 @@ class Help(commands.Cog):
     @commands.command(help='Show this menu, how else would this show up?')
     async def help(self, ctx):
         embed = discord.Embed(title='Help menu', description='All the commands!', color=discord.Color.blurple())
-        embed.add_field(name='***prefix***', value='*//*')
+        embed.add_field(name='***prefix***', value=f'*{PREFIX}*')
         for command in self.bot.commands:
             try:
                 if await command.can_run(ctx):
