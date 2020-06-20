@@ -20,10 +20,10 @@ class moderation(commands.Cog):
     async def kick(self, ctx, member: discord.Member, *, reason=None):
         embed = discord.Embed(title=f'You have been kicked from {ctx.guild.name}', color=discord.Color.green())
         if reason:
-            embed.add_field(name='Reason:', value=f'{reason}')
+            embed.add_field(name='Reason:', value=f'{reason}', inline=False)
         embed.add_field(name='If you have questions:', value=f'If you have questions about this action, or would like '
                                                              f'to appeal it. Please contact the staff team. '
-                                                             f'You were kicked by {ctx.author.mention}')
+                                                             f'You were kicked by {ctx.author.mention}', inline=False)
         try:
             await member.send(embed=embed)
         except discord.Forbidden:
@@ -41,6 +41,7 @@ class moderation(commands.Cog):
                                   color=discord.Color.green())
         else:
             embed = discord.Embed(title=f'👌 {member} has been kicked', color=discord.Color.green())
+        await ctx.send(embed=embed)
         channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
 
@@ -49,10 +50,10 @@ class moderation(commands.Cog):
     async def ban(self, ctx, member: discord.Member, *, reason=None):
         embed = discord.Embed(title=f'You have been banned from {ctx.guild.name}', color=discord.Color.green())
         if reason:
-            embed.add_field(name='Reason:', value=f'{reason}')
+            embed.add_field(name='Reason:', value=f'{reason}', inline=False)
         embed.add_field(name='If you have questions:', value=f'If you have questions about this action, or would like '
                                                              f'to appeal it. Please contact the staff team. '
-                                                             f'You were banned by {ctx.author.mention}')
+                                                             f'You were banned by {ctx.author.mention}', inline=False)
         try:
             await member.send(embed=embed)
         except discord.Forbidden:
@@ -63,6 +64,7 @@ class moderation(commands.Cog):
                                   color=discord.Color.green())
         else:
             embed = discord.Embed(title=f'👌 {member} has been banned', color=discord.Color.green())
+        await ctx.send(embed=embed)
         channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
 
@@ -71,10 +73,10 @@ class moderation(commands.Cog):
     async def warn(self, ctx, member: discord.Member, *, reason=None):
         embed = discord.Embed(title=f'You have been warned in {ctx.guild.name}', color=discord.Color.green())
         if reason:
-            embed.add_field(name='Reason:', value=f'{reason}')
+            embed.add_field(name='Reason:', value=f'{reason}', inline=False)
         embed.add_field(name='If you have questions:', value=f'If you have questions about this action, or would like '
                                                              f'to appeal it. Please contact the staff team. '
-                                                             f'You were warned by {ctx.author.mention}')
+                                                             f'You were warned by {ctx.author.mention}', inline=False)
         try:
             await member.send(embed=embed)
         except discord.Forbidden:
@@ -84,6 +86,7 @@ class moderation(commands.Cog):
                                   color=discord.Color.green())
         else:
             embed = discord.Embed(title=f'👌 {member} has been warned', color=discord.Color.green())
+        await ctx.send(embed=embed)
         channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
         try:
