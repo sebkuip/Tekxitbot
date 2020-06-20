@@ -18,12 +18,12 @@ class moderation(commands.Cog):
     @commands.command(help='Kicks the specified member for the specified reason')
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *, reason=None):
-        embed = discord.Embed(color=discord.Color.red())
-        embed.set_author(name=str(member), icon_url=member.avatar_url)
-        embed.add_field(name=f'**YOU GOT KICKED FROM**', value=f'```{ctx.guild.name}```', inline=False)
-        embed.add_field(name=f'**BY**', value=ctx.author.mention, inline=False)
+        embed = discord.Embed(title=f'You have been kicked from {ctx.guild.name}', color=discord.Color.green())
         if reason:
-            embed.add_field(name=f'**FOR THE REASON**', value=f'`{reason}`', inline=False)
+            embed.add_field(name='Reason:', value=f'{reason}')
+        embed.add_field(name='If you have questions:', value=f'If you have questions about this action, or would like '
+                                                             f'to appeal it. Please contact the staff team. '
+                                                             f'You were kicked by {ctx.author.mention}')
         try:
             await member.send(embed=embed)
         except discord.Forbidden:
@@ -35,54 +35,55 @@ class moderation(commands.Cog):
             self.conn.commit()
         except Exception as error:
             print(error)
-        embed.remove_field(0)
-        embed.remove_field(0)
-        embed.insert_field_at(0, name=f'**GOT KICKED BY**', value=ctx.author.mention, inline=False)
-        await ctx.send(embed=embed)
         await ctx.message.delete()
+        if reason:
+            embed = discord.Embed(title=f'👌 {member} has been kicked, with the reason {reason}',
+                                  color=discord.Color.green())
+        else:
+            embed = discord.Embed(title=f'👌 {member} has been kicked', color=discord.Color.green())
         channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
 
     @commands.command(help='Bans the specified member for the specified reason')
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, *, reason=None):
-        embed = discord.Embed(color=discord.Color.red())
-        embed.set_author(name=str(member), icon_url=member.avatar_url)
-        embed.add_field(name=f'**YOU GOT BANNED FROM**', value=f'```{ctx.guild.name}```', inline=False)
-        embed.add_field(name=f'**BY**', value=ctx.author.mention, inline=False)
+        embed = discord.Embed(title=f'You have been banned from {ctx.guild.name}', color=discord.Color.green())
         if reason:
-            embed.add_field(name=f'**FOR THE REASON**', value=f'`{reason}`', inline=False)
+            embed.add_field(name='Reason:', value=f'{reason}')
+        embed.add_field(name='If you have questions:', value=f'If you have questions about this action, or would like '
+                                                             f'to appeal it. Please contact the staff team. '
+                                                             f'You were banned by {ctx.author.mention}')
         try:
             await member.send(embed=embed)
         except discord.Forbidden:
             await ctx.send('Could not send DM to user')
         await member.ban(reason=reason)
-        embed.remove_field(0)
-        embed.remove_field(0)
-        embed.insert_field_at(0, name=f'**GOT BANNED BY**', value=ctx.author.mention, inline=False)
-        await ctx.send(embed=embed)
-        await ctx.message.delete()
+        if reason:
+            embed = discord.Embed(title=f'👌 {member} has been banned with the reason {reason}',
+                                  color=discord.Color.green())
+        else:
+            embed = discord.Embed(title=f'👌 {member} has been banned', color=discord.Color.green())
         channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
 
     @commands.command(help='Warns the user for the specified reason')
     @commands.has_permissions(manage_messages=True)
     async def warn(self, ctx, member: discord.Member, *, reason=None):
-        embed = discord.Embed(color=discord.Color.red())
-        embed.set_author(name=str(member), icon_url=member.avatar_url)
-        embed.add_field(name=f'**YOU GOT WARNED IN**', value=f'```{ctx.guild.name}```', inline=False)
-        embed.add_field(name=f'**BY**', value=ctx.author.mention, inline=False)
+        embed = discord.Embed(title=f'You have been warned in {ctx.guild.name}', color=discord.Color.green())
         if reason:
-            embed.add_field(name=f'**FOR THE REASON**', value=f'`{reason}`', inline=False)
+            embed.add_field(name='Reason:', value=f'{reason}')
+        embed.add_field(name='If you have questions:', value=f'If you have questions about this action, or would like '
+                                                             f'to appeal it. Please contact the staff team. '
+                                                             f'You were warned by {ctx.author.mention}')
         try:
             await member.send(embed=embed)
         except discord.Forbidden:
             await ctx.send('Could not send DM to user')
-        embed.remove_field(0)
-        embed.remove_field(0)
-        embed.insert_field_at(0, name=f'**GOT WARNED BY**', value=ctx.author.mention, inline=False)
-        await ctx.send(embed=embed)
-        await ctx.message.delete()
+        if reason:
+            embed = discord.Embed(title=f'👌 {member} has been warned with the reason {reason}',
+                                  color=discord.Color.green())
+        else:
+            embed = discord.Embed(title=f'👌 {member} has been warned', color=discord.Color.green())
         channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
         try:
