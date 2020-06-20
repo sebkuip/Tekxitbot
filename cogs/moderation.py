@@ -36,7 +36,7 @@ class moderation(commands.Cog):
         except Exception as error:
             print(error)
         if reason:
-            embed = discord.Embed(title=f'👌 {member} has been kicked for the reason: `{reason}`',
+            embed = discord.Embed(title=f'👌 {member} has been kicked for the reason:\n`{reason}`',
                                   color=discord.Color.green())
         else:
             embed = discord.Embed(title=f'👌 {member} has been kicked', color=discord.Color.green())
@@ -59,7 +59,7 @@ class moderation(commands.Cog):
             await ctx.send('Could not send DM to user')
         await member.ban(reason=reason)
         if reason:
-            embed = discord.Embed(title=f'👌 {member} has been banned for the reason: `{reason}`',
+            embed = discord.Embed(title=f'👌 {member} has been banned for the reason:\n`{reason}`',
                                   color=discord.Color.green())
         else:
             embed = discord.Embed(title=f'👌 {member} has been banned', color=discord.Color.green())
@@ -81,7 +81,7 @@ class moderation(commands.Cog):
         except discord.Forbidden:
             await ctx.send('Could not send DM to user')
         if reason:
-            embed = discord.Embed(title=f'👌 {member} has been warned for the reason `{reason}`',
+            embed = discord.Embed(title=f'👌 {member} has been warned for the reason:\n`{reason}`',
                                   color=discord.Color.green())
         else:
             embed = discord.Embed(title=f'👌 {member} has been warned', color=discord.Color.green())
