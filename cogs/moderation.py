@@ -35,7 +35,6 @@ class moderation(commands.Cog):
             self.conn.commit()
         except Exception as error:
             print(error)
-        await ctx.message.delete()
         if reason:
             embed = discord.Embed(title=f'👌 {member} has been kicked for the reason: `{reason}`',
                                   color=discord.Color.green())
