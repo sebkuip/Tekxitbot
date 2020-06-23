@@ -71,8 +71,8 @@ class moderation(commands.Cog):
 
     @commands.command(help='Warns the user for the specified reason')
     @commands.has_permissions(manage_messages=True)
-    await ctx.message.delete()
     async def warn(self, ctx, member: discord.Member, *, reason=None):
+        await ctx.message.delete()
         embed = discord.Embed(title=f'You have been warned in {ctx.guild.name}', color=discord.Color.green())
         if reason:
             embed.add_field(name='Reason:', value=f'{reason}', inline=False)
@@ -149,7 +149,6 @@ class moderation(commands.Cog):
             await ctx.send(f'Successfully deleted warn with ID: {warnid}')
         except:
             await ctx.send(f'Could not find warn with ID: {warnid}')
-
 
 
 def setup(bot):
