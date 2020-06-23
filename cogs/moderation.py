@@ -145,10 +145,11 @@ class moderation(commands.Cog):
         await ctx.message.delete()
         try:
             self.cur.execute("DELETE FROM warnings WHERE kickid = %s", (warnid,))
-            self.conn.commit()
             await ctx.send(f'Successfully deleted warn with ID: {warnid}')
         except:
             await ctx.send(f'Could not find warn with ID: {warnid}')
+        finally:
+            self.conn.commit()
 
 
 def setup(bot):
