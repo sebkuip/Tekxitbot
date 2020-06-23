@@ -141,7 +141,7 @@ class moderation(commands.Cog):
 
     @commands.command(help='Delete a warning')
     @commands.has_permissions(manage_messages=True)
-    async def delwarn(self, ctx, warnid):
+    async def delwarn(self, ctx, warnid: int):
         await ctx.message.delete()
         try:
             self.cur.execute("DELETE FROM warnings WHERE kickid = %s", (warnid,))
