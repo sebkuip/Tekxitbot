@@ -32,15 +32,18 @@ class moderation(commands.Cog):
         await member.kick(reason=reason)
         try:
             self.cur.execute("INSERT INTO kicks(uid, executor, timedate, reason) VALUES(%s, %s, "
-                             "CURRENT_TIMESTAMP(1), %s)", (member.id, ctx.author.id, reason))
+                             "CURRENT_TIMESTAMP(1), %s) RETURNING kickid", (member.id, ctx.author.id, reason))
+            kickid = self.cur.fetchone()[0]
             self.conn.commit()
         except Exception as error:
             print(error)
         if reason:
             embed = discord.Embed(title=f'👌 {member} has been kicked for the reason:\n`{reason}`',
+                                  description=f'CASE {kickid}',
                                   color=discord.Color.green())
         else:
-            embed = discord.Embed(title=f'👌 {member} has been kicked', color=discord.Color.green())
+            embed = discord.Embed(title=f'👌 {member} has been kicked', description=f'CASE {kickid}',
+                                  color=discord.Color.green())
         await ctx.send(embed=embed)
         channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
@@ -96,7 +99,8 @@ class moderation(commands.Cog):
                                   description=f'CASE {warnid}',
                                   color=discord.Color.green())
         else:
-            embed = discord.Embed(title=f'👌 {member} has been warned', color=discord.Color.green())
+            embed = discord.Embed(title=f'👌 {member} has been warned',
+                                  description=f'CASE {warnid}', color=discord.Color.green())
         await ctx.send(embed=embed)
         channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
@@ -232,7 +236,7 @@ class moderation(commands.Cog):
                             value=f'When: {datetime} UTC\nExecutor: {invoker}\nReason: {case[6]}\nTemporary: {case[4]}\nend: {enddatetime}',
                             inline=False)
         except:
-            await ctx.send(f'Could not find warn with ID: {banid}')
+            await ctx.send(f'Could not find ban with ID: {banid}')
 
 
 def setup(bot):
