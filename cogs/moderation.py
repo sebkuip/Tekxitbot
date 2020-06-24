@@ -12,7 +12,7 @@ class moderation(commands.Cog):
             self.conn = psycopg2.connect(host=HOST, port=PORT, database=DATABASE, user=USER,
                                          password=PASSWORD)
             self.cur = self.conn.cursor()
-        except (Exception, psycopg2.DatabaseError) as error:
+        except (Exception, psycopg2.DatabaseError):
             pass
 
     @commands.command(help='Kicks the specified member for the specified reason')
@@ -83,20 +83,23 @@ class moderation(commands.Cog):
             await member.send(embed=embed)
         except discord.Forbidden:
             await ctx.send('Could not send DM to user')
+        try:
+            self.cur.execute("INSERT INTO warnings(uid, executor, timedate, reason) VALUES(%s, "
+                             "%s, CURRENT_TIMESTAMP(1), %s) RETURNING warnid", (member.id, ctx.author.id, reason))
+            warnid = self.cur.fetchone()[0]
+            self.conn.commit()
+        except Exception as error:
+            print(error)
+
         if reason:
             embed = discord.Embed(title=f'👌 {member} has been warned for the reason:\n`{reason}`',
+                                  description=f'CASE {warnid}',
                                   color=discord.Color.green())
         else:
             embed = discord.Embed(title=f'👌 {member} has been warned', color=discord.Color.green())
         await ctx.send(embed=embed)
         channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
-        try:
-            self.cur.execute("INSERT INTO warnings(uid, executor, timedate, reason) VALUES(%s, "
-                             "%s, CURRENT_TIMESTAMP(1), %s)", (member.id, ctx.author.id, reason))
-            self.conn.commit()
-        except Exception as error:
-            print(error)
 
     @commands.command(help='View all infractions for a user')
     @commands.has_permissions(manage_messages=True)
@@ -144,12 +147,92 @@ class moderation(commands.Cog):
     async def delwarn(self, ctx, warnid: int):
         await ctx.message.delete()
         try:
-            self.cur.execute("DELETE FROM warnings WHERE kickid = %s", (warnid,))
+            self.cur.execute("DELETE FROM warnings WHERE warnid = %s", (warnid,))
             await ctx.send(f'Successfully deleted warn with ID: {warnid}')
         except:
             await ctx.send(f'Could not find warn with ID: {warnid}')
         finally:
             self.conn.commit()
+
+    @commands.command(help='Delete a kick')
+    @commands.has_permissions(manage_messages=True)
+    async def delkick(self, ctx, kickid: int):
+        await ctx.message.delete()
+        try:
+            self.cur.execute("DELETE FROM kicks WHERE kickid = %s", (kickid,))
+            await ctx.send(f'Successfully deleted kick with ID: {kickid}')
+        except:
+            await ctx.send(f'Could not find kick with ID: {kickid}')
+        finally:
+            self.conn.commit()
+
+    @commands.command(help='Delete a ban')
+    @commands.has_permissions(manage_messages=True)
+    async def delban(self, ctx, banid: int):
+        await ctx.message.delete()
+        try:
+            self.cur.execute("DELETE FROM bans WHERE kickid = %s", (banid,))
+            await ctx.send(f'Successfully deleted ban with ID: {banid}')
+        except:
+            await ctx.send(f'Could not find ban with ID: {banid}')
+        finally:
+            self.conn.commit()
+
+    @commands.command(help='Check out a warning case')
+    @commands.has_permissions(manage_messages=True)
+    async def warncase(self, ctx, warnid: int):
+        await ctx.message.delete()
+        try:
+            self.cur.execute("SELECT * FROM warnings WHERE warnid = %s", (warnid,))
+            case = self.cur.fetchone()
+            embed = discord.Embed(color=0xb277dd)
+            member = await self.bot.fetch_user(case[1])
+            embed.set_author(name=str(member), icon_url=member.avatar_url)
+            invoker = await self.bot.fetch_user(case[2])
+            datetime = str(case[3])[0:-7]
+            embed.add_field(name='ID: ' + str(case[0]),
+                            value=f'When: {datetime} UTC\nExecutor: {invoker}\nReason: {case[4]}', inline=False)
+            await ctx.send(embed=embed)
+        except:
+            await ctx.send(f'Could not find warn with ID: {warnid}')
+
+    @commands.command(help='Check out a kick case')
+    @commands.has_permissions(manage_messages=True)
+    async def kickcase(self, ctx, kickid: int):
+        await ctx.message.delete()
+        try:
+            self.cur.execute("SELECT * FROM kicks WHERE kickid = %s", (kickid,))
+            case = self.cur.fetchone()
+            embed = discord.Embed(color=0xb277dd)
+            member = await self.bot.fetch_user(case[1])
+            embed.set_author(name=str(member), icon_url=member.avatar_url)
+            invoker = await self.bot.fetch_user(case[2])
+            datetime = str(case[3])[0:-7]
+            embed.add_field(name='ID: ' + str(case[0]),
+                            value=f'When: {datetime} UTC\nExecutor: {invoker}\nReason: {case[4]}', inline=False)
+            await ctx.send(embed=embed)
+        except:
+            await ctx.send(f'Could not find kick with ID: {kickid}')
+
+    @commands.command(help='Check out a ban case')
+    @commands.has_permissions(manage_messages=True)
+    async def bancase(self, ctx, banid: int):
+        await ctx.message.delete()
+        try:
+            self.cur.execute("SELECT * FROM bans WHERE banid = %s", (banid,))
+            case = self.cur.fetchone()
+            embed = discord.Embed(color=0xb277dd)
+            member = await self.bot.fetch_user(case[1])
+            embed.set_author(name=str(member), icon_url=member.avatar_url)
+            invoker = await self.bot.fetch_user(case[2])
+            datetime = str(case[3])[0:-7]
+            if case[4]:
+                enddatetime = str(case[5])
+            embed.add_field(name='ID: ' + str(case[0]),
+                            value=f'When: {datetime} UTC\nExecutor: {invoker}\nReason: {case[6]}\nTemporary: {case[4]}\nend: {enddatetime}',
+                            inline=False)
+        except:
+            await ctx.send(f'Could not find warn with ID: {banid}')
 
 
 def setup(bot):
