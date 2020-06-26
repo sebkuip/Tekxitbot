@@ -6,7 +6,7 @@ class CustomCommands(commands.Cog):
         self.bot = bot  # This is the bot instance, it lets us interact with most things
 
     @commands.command(help='Gets the custom help commands')
-    async def chelp(self, ctx, name='help'):
+    async def chelp(self, ctx, name='chelp'):
         name = name.lower()
         with open(f'cogs/chelp/{name}.txt', 'r') as f:
             message = f.read()
