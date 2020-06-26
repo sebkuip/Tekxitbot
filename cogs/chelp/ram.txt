@@ -6,13 +6,13 @@
 3. Click **Java Settings** 
 4. Click **Memory** 
 5. Click **3.5 GB ** (Or Higher)
->**IF YOU CANNOT GO HIGHER THAN 1GB PLEASE READ BELOW ↓↓↓**
+**IF YOU CANNOT GO HIGHER THAN 1GB PLEASE READ BELOW ↓↓↓**
 ~~**--------------------------------------**~~
 **Help! I can't go above 1 GB **
 :exclamation: Make sure Your Computer has more than **4 Gigabytes of Ram!**
 1. Uninstall **32 Bit Java**
 2. Install **64 Bit Java** from: https://www.java.com/en/download/manual.jsp
->Make sure you have the right one. You NEED to get the 64-bit variant. (http://prntscr.com/oq40wc)
+Make sure you have the right one. You NEED to get the 64-bit variant. (http://prntscr.com/oq40wc)
 3. Restart the **Technic Launcher**
 4. Repeat the **Process Above**
 :heart: Still not Working? Ask **Staff** for further support!

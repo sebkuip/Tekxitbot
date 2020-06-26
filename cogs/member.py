@@ -1,4 +1,3 @@
-import discord
 from discord.ext import commands
 
 from config import *
@@ -12,12 +11,12 @@ class Members(commands.Cog):
     async def on_member_join(self, member):
         channel = self.bot.get_channel(JOINCHANNEL)
         if channel is not None:
-            emoji = discord.utils.get(channel.guild.emojis, name='Heart3')
-            message = await channel.send(f'> <:R3:721722986339631234><:R2:721722986159407115><:R4:721722986356539472>**__New Member__**<:R5:721722986373185646><:R3:721722986339631234><:R2:721722986159407115>\n'
-                                         f'> <:R1:721722971164508190> Welcome {member.mention}!\n'
-                                         f'> <:R1:721722971164508190> We now have** {self.bot.get_guild(GUILDID).member_count} **members!\n'
-                                         f'> <:R1:721722971164508190> Be sure to check <#606795102987223051>\n'
-                                         f'> <:R1:721722971164508190> Hope you enjoy your stay! <:Heart3:655160924134440990>')
+            await channel.send(f'> <:R3:721722986339631234><:R2:721722986159407115><:R4:721722986356539472>**__New '
+                               f'Member__**<:R5:721722986373185646><:R3:721722986339631234><:R2:721722986159407115>\n '
+                               f'> <:R1:721722971164508190> Welcome {member.mention}!\n'
+                               f'> <:R1:721722971164508190> We now have** {self.bot.get_guild(GUILDID).member_count} **members!\n '
+                               f'> <:R1:721722971164508190> Be sure to check <#606795102987223051>\n'
+                               f'> <:R1:721722971164508190> Hope you enjoy your stay! <:Heart3:655160924134440990>')
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
