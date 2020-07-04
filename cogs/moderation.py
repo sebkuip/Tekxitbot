@@ -38,9 +38,10 @@ class moderation(commands.Cog):
         except Exception as error:
             print(error)
         if reason:
-            embed = discord.Embed(title=f'👌 {member} has been kicked for the reason:\n`{reason}`',
-                                  description=f'CASE {kickid}',
+            embed = discord.Embed(title=f'👌 {member} has been kicked for the reason:',
                                   color=discord.Color.green())
+            embed.add_field(name='\u200b', value=f'`{reason}`')
+            embed.add_field(name=f'{kickid}')
         else:
             embed = discord.Embed(title=f'👌 {member} has been kicked', description=f'CASE {kickid}',
                                   color=discord.Color.green())
@@ -64,8 +65,9 @@ class moderation(commands.Cog):
             await ctx.send('Could not send DM to user')
         await member.ban(reason=reason)
         if reason:
-            embed = discord.Embed(title=f'👌 {member} has been banned for the reason:\n`{reason}`',
+            embed = discord.Embed(title=f'👌 {member} has been banned for the reason:',
                                   color=discord.Color.green())
+            embed.add_field(name='\u200b', value=f'`{reason}`')
         else:
             embed = discord.Embed(title=f'👌 {member} has been banned', color=discord.Color.green())
         await ctx.send(embed=embed)
@@ -95,9 +97,10 @@ class moderation(commands.Cog):
             print(error)
 
         if reason:
-            embed = discord.Embed(title=f'👌 {member} has been warned for the reason:\n`{reason}`',
-                                  description=f'CASE {warnid}',
+            embed = discord.Embed(title=f'👌 {member} has been warned for the reason:',
                                   color=discord.Color.green())
+            embed.add_field(name='\u200b', value=f'`{reason}`')
+            embed.add_field(name=f'{warnid}')
         else:
             embed = discord.Embed(title=f'👌 {member} has been warned',
                                   description=f'CASE {warnid}', color=discord.Color.green())
