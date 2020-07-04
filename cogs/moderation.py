@@ -40,9 +40,9 @@ class moderation(commands.Cog):
         if reason:
             embed = discord.Embed(title=f'👌 CASE {kickid} {member} has been kicked for the reason:',
                                   color=discord.Color.green())
-            embed.add_field(name='\u200b', value=f'`{reason}`', inline=False)
+            embed.add_field(name='\u200b', value=f'**{reason}**', inline=False)
         else:
-            embed = discord.Embed(title=f'👌 {member} has been kicked', description=f'CASE {kickid}',
+            embed = discord.Embed(title=f'👌 CASE {kickid} {member} has been kicked',
                                   color=discord.Color.green())
         await ctx.send(embed=embed)
         channel = await self.bot.fetch_channel(425632491622105088)
@@ -98,10 +98,9 @@ class moderation(commands.Cog):
         if reason:
             embed = discord.Embed(title=f'👌 CASE {warnid} {member} has been warned for the reason:',
                                   color=discord.Color.green())
-            embed.add_field(name='\u200b', value=f'{reason}', inline=False)
+            embed.add_field(name='\u200b', value=f'**{reason}**', inline=False)
         else:
-            embed = discord.Embed(title=f'👌 {member} has been warned',
-                                  description=f'CASE {warnid}', color=discord.Color.green())
+            embed = discord.Embed(title=f'👌 CASE {warnid} {member} has been warned')
         await ctx.send(embed=embed)
         channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
