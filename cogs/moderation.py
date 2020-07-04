@@ -38,10 +38,9 @@ class moderation(commands.Cog):
         except Exception as error:
             print(error)
         if reason:
-            embed = discord.Embed(title=f'👌 {member} has been kicked for the reason:',
+            embed = discord.Embed(title=f'👌 CASE {kickid} {member} has been kicked for the reason:',
                                   color=discord.Color.green())
             embed.add_field(name='\u200b', value=f'`{reason}`', inline=False)
-            embed.add_field(name=f'CASE {kickid}', value='\u200b', inline=False)
         else:
             embed = discord.Embed(title=f'👌 {member} has been kicked', description=f'CASE {kickid}',
                                   color=discord.Color.green())
@@ -97,10 +96,9 @@ class moderation(commands.Cog):
             print(error)
 
         if reason:
-            embed = discord.Embed(title=f'👌 {member} has been warned for the reason:',
+            embed = discord.Embed(title=f'👌 CASE {warnid} {member} has been warned for the reason:',
                                   color=discord.Color.green())
-            embed.add_field(name='\u200b', value=f'`{reason}`', inline=False)
-            embed.add_field(name=f'CASE {warnid}', value='\u200b', inline=False)
+            embed.add_field(name='\u200b', value=f'{reason}', inline=False)
         else:
             embed = discord.Embed(title=f'👌 {member} has been warned',
                                   description=f'CASE {warnid}', color=discord.Color.green())
