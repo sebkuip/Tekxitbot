@@ -39,12 +39,12 @@ class ErrorHandler(commands.Cog):
         elif isinstance(error, commands.BotMissingPermissions):
             embed.add_field(name=f'**BotMissingPermissions**',
                             value=f'Looks like the bot is missing permissions to execute this command.')
-        elif isinstance(error, discord.ext.commands.errors.CommandInvokeError):
-            embed.add_field(name=f'**CommandInvokeError**',
-                            value=f'Looks like something is wrong with the command. This could be because the page '
-                                  f'does not exist.')
         elif isinstance(error, discord.Forbidden):
             pass
+        # elif isinstance(error, discord.ext.commands.errors.CommandInvokeError):
+        # embed.add_field(name=f'**CommandInvokeError**',
+        # value=f'Looks like something is wrong with the command. This could be because the page '
+        # f'does not exist.')
         else:
             embed.add_field(name=f'**UnknownError**', value=f'An unknown error has appeared, check console')
             raise error

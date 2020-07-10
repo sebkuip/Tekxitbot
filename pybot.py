@@ -4,8 +4,9 @@ import logging
 
 import discord
 import psycopg2
-from config import *
 from discord.ext import commands
+
+from config import *
 
 bot = commands.Bot(command_prefix=PREFIX)
 bot.remove_command('help')
@@ -56,6 +57,7 @@ async def on_message(message):
             return
         except:
             await bot.process_commands(message)
+            return
 
 
 @bot.command(help='Reload a cog')

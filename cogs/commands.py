@@ -46,7 +46,7 @@ class Commands(commands.Cog):
     @commands.has_permissions(mention_everyone=True)
     async def someone(self, ctx):
         members = ctx.guild.members
-        embed = discord.Embed(title=f'@someone', description=random.choice(members).mention())
+        embed = discord.Embed(title=f'@someone', description=random.choice(members).mention)
         await ctx.send(embed=embed)
 
 
