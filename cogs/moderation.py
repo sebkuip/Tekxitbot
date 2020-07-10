@@ -50,7 +50,7 @@ class moderation(commands.Cog):
 
     @commands.command(help='Bans the specified member for the specified reason')
     @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx, member: discord.Member, *, reason=None):
+    async def ban(self, ctx, member: discord.User, *, reason=None):
         await ctx.message.delete()
         embed = discord.Embed(title=f'You have been banned from {ctx.guild.name}', color=discord.Color.green())
         if reason:
@@ -75,14 +75,14 @@ class moderation(commands.Cog):
 
     @commands.command(help='Warns the user for the specified reason')
     @commands.has_permissions(manage_messages=True)
-    async def warn(self, ctx, member: discord.Member, *, reason=None):
+    async def warn(self, ctx, member: discord.User, *, reason=None):
         await ctx.message.delete()
         embed = discord.Embed(title=f'You have been warned in {ctx.guild.name}', color=discord.Color.green())
         if reason:
             embed.add_field(name='Reason:', value=f'{reason}', inline=False)
-        embed.add_field(name='If you have questions:', value=f'If you have questions about this action, or would like '
-                                                             f'to appeal it. Please contact the staff team. '
-                                                             f'You were warned by {ctx.author.mention}', inline=False)
+        embed.add_field(name='\u200b', value=f'If you have questions about this action, or would like '
+                                             f'to appeal it. Please contact the staff team. '
+                                             f'You were warned by {ctx.author.mention}', inline=False)
         try:
             await member.send(embed=embed)
         except discord.Forbidden:
