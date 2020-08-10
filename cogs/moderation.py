@@ -42,15 +42,14 @@ class moderation(commands.Cog):
                                   color=discord.Color.green())
             embed.add_field(name='\u200b', value=f'**{reason}**', inline=False)
         else:
-            embed = discord.Embed(title=f'👌 CASE {kickid} {member} has been kicked',
-                                  color=discord.Color.green())
+            embed = discord.Embed(title=f'👌 CASE {kickid} {member} has been kicked')
         await ctx.send(embed=embed)
         channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
 
     @commands.command(help='Bans the specified member for the specified reason')
     @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx, member: discord.User, *, reason=None):
+    async def ban(self, ctx, member: discord.Member, *, reason=None):
         await ctx.message.delete()
         embed = discord.Embed(title=f'You have been banned from {ctx.guild.name}', color=discord.Color.green())
         if reason:
@@ -63,12 +62,51 @@ class moderation(commands.Cog):
         except discord.Forbidden:
             await ctx.send('Could not send DM to user')
         await member.ban(reason=reason)
+        try:
+            self.cur.execute("INSERT INTO bans(uid, executor, timedate, reason) VALUES(%s, %s, "
+                             "CURRENT_TIMESTAMP(1), %s) RETURNING banid", (member.id, ctx.author.id, reason))
+            banid = self.cur.fetchone()[0]
+            self.conn.commit()
+        except Exception as error:
+            print(error)
         if reason:
-            embed = discord.Embed(title=f'👌 {member} has been banned for the reason:',
+            embed = discord.Embed(title=f'👌 CASE {banid} {member} has been banned for the reason:',
                                   color=discord.Color.green())
-            embed.add_field(name='\u200b', value=f'`{reason}`', inline=False)
+            embed.add_field(name='\u200b', value=f'**{reason}**', inline=False)
         else:
-            embed = discord.Embed(title=f'👌 {member} has been banned', color=discord.Color.green())
+            embed = discord.Embed(title=f'👌 CASE {banid} {member} has been banned')
+        await ctx.send(embed=embed)
+        channel = await self.bot.fetch_channel(425632491622105088)
+        await channel.send(embed=embed)
+
+    @commands.command(help='Bans the specified member for the specified reason for a specified time (DO NOT USE, WIP)')
+    @commands.has_permissions(administrator=True)
+    async def tempban(self, ctx, member: discord.Member, time, *, reason=None):
+        await ctx.message.delete()
+        embed = discord.Embed(title=f'You have been banned from {ctx.guild.name}', color=discord.Color.green())
+        if reason:
+            embed.add_field(name='Reason:', value=f'{reason}', inline=False)
+        embed.add_field(name='If you have questions:', value=f'If you have questions about this action, or would like '
+                                                             f'to appeal it. Please contact the staff team. '
+                                                             f'You were banned by {ctx.author.mention}', inline=False)
+        try:
+            await member.send(embed=embed)
+        except discord.Forbidden:
+            await ctx.send('Could not send DM to user')
+        await member.ban(reason=reason)
+        try:
+            self.cur.execute("INSERT INTO tempbans(uid, executor, timedate, reason) VALUES(%s, %s, "
+                             "CURRENT_TIMESTAMP(1), %s) RETURNING banid", (member.id, ctx.author.id, reason))
+            banid = self.cur.fetchone()[0]
+            self.conn.commit()
+        except Exception as error:
+            print(error)
+        if reason:
+            embed = discord.Embed(title=f'👌 CASE {banid} {member} has been temporary banned for the reason:',
+                                  color=discord.Color.green())
+            embed.add_field(name='\u200b', value=f'**{reason}**', inline=False)
+        else:
+            embed = discord.Embed(title=f'👌 CASE {banid} {member} has been temporary banned')
         await ctx.send(embed=embed)
         channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
