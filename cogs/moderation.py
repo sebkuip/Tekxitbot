@@ -133,12 +133,11 @@ class moderation(commands.Cog):
         except Exception as error:
             print(error)
 
+        embed = discord.Embed(title=f'Case {warnid} | Warn | {member}',
+                              color=discord.Color.green())
         if reason:
-            embed = discord.Embed(title=f'👌 CASE {warnid} {member} has been warned for the reason:',
-                                  color=discord.Color.green())
-            embed.add_field(name='\u200b', value=f'**{reason}**', inline=False)
-        else:
-            embed = discord.Embed(title=f'👌 CASE {warnid} {member} has been warned')
+            embed.add_field(name='Reason', value=f'{reason}', inline=False)
+        embed.set_footer(f'Action performed by {ctx.author} | {warnid}')
         await ctx.send(embed=embed)
         channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
