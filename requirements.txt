@@ -4,3 +4,4 @@ asyncio
 typing
 requests
 psycopg2
+wikia

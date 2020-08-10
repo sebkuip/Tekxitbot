@@ -51,21 +51,21 @@ class Commands(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(help='Searched the Tekxit wiki')
-    async def wiki(self, ctx, wiki=None):
+    async def wiki(self, ctx, *, wiki=None):
         if not wiki:
             await ctx.send('The Tekxit wiki can be found at:\nhttps://tekxit.fandom.com/wiki/Tekxit_Wiki')
         else:
             async with ctx.typing():
                 try:
-                    summary = wikia.summary("Tekxit", wiki)
-                    link = wikia.page("Tekxit", wiki)
-                    link = link.url
-                    embed = discord.Embed(title=f'{wiki} | Tekxit wiki', color=discord.Color.blurple)
+                    summary = wikia.summary("tekxit", wiki)
+                    page = wikia.page("tekxit", wiki)
+                    link = page.url
+                    embed = discord.Embed(title=f'{wiki} | Tekxit wiki', color=discord.Color.blurple())
                     embed.add_field(name=link, value=summary)
                     embed.set_footer(text='If you want to edit this page, click the link at the top of this message')
                     await ctx.send(embed=embed)
-                except:
-                    await ctx.send('This page does not exist')
+                except Exception as E:
+                    raise E
 
 
 def setup(bot):

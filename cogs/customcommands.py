@@ -8,10 +8,14 @@ class CustomCommands(commands.Cog):
     @commands.command(help='Gets the custom help commands')
     async def chelp(self, ctx, name='chelp'):
         name = name.lower()
-        with open(f'cogs/chelp/{name}.txt', 'r') as f:
-            message = f.read()
-        await ctx.send(f'{message}')
-        await ctx.message.delete()
+        try:
+            with open(f'cogs/chelp/{name}.txt', 'r') as f:
+                message = f.read()
+            await ctx.send(f'{message}')
+            await ctx.message.delete()
+
+        except:
+            pass
 
 
 def setup(bot):

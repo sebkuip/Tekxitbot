@@ -54,10 +54,8 @@ async def on_message(message):
                 command = f.read()
             await message.channel.send(f'{command}')
             await message.delete()
-            return
-        except:
+        except FileNotFoundError:
             await bot.process_commands(message)
-            return
 
 
 @bot.command(help='Reload a cog')
