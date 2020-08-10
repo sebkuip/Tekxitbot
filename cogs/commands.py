@@ -2,6 +2,7 @@ import random
 import typing
 
 import discord
+import wikia
 from discord.ext import commands
 
 
@@ -48,6 +49,23 @@ class Commands(commands.Cog):
         members = ctx.guild.members
         embed = discord.Embed(title=f'@someone', description=random.choice(members).mention)
         await ctx.send(embed=embed)
+
+    @commands.command(help='Searched the Tekxit wiki')
+    async def wiki(self, ctx, wiki=None):
+        if not wiki:
+            await ctx.send('The Tekxit wiki can be found at:\nhttps://tekxit.fandom.com/wiki/Tekxit_Wiki')
+        else:
+            async with ctx.typing():
+                try:
+                    summary = wikia.summary("Tekxit", wiki)
+                    link = wikia.page("Tekxit", wiki)
+                    link = link.url
+                    embed = discord.Embed(title=f'{wiki} | Tekxit wiki', color=discord.Color.blurple)
+                    embed.add_field(name=link, value=summary)
+                    embed.set_footer(text='If you want to edit this page, click the link at the top of this message')
+                    await ctx.send(embed=embed)
+                except:
+                    await ctx.send('This page does not exist')
 
 
 def setup(bot):
