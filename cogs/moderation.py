@@ -38,11 +38,16 @@ class moderation(commands.Cog):
         except Exception as error:
             print(error)
         if reason:
-            embed = discord.Embed(title=f'👌 CASE {kickid} {member} has been kicked for the reason:',
+            embed = discord.Embed(title=f' ', description=f' ',
                                   color=discord.Color.green())
-            embed.add_field(name='\u200b', value=f'**{reason}**', inline=False)
+            embed.set_footer(text=f'Action performed by {ctx.author} | Case {kickid}')
+            embed.set_author(name=f'Case {kickid} | Kick | {member}')
+            embed.add_field(name=f'\u200bReason', value=f'{reason}', inline=False)
         else:
-            embed = discord.Embed(title=f'👌 CASE {kickid} {member} has been kicked')
+            embed = discord.Embed(title=f' ', description=f' ',
+                                  color=discord.Color.green())
+            embed.set_footer(text=f'Action performed by {ctx.author} | Case {kickid}')
+            embed.set_author(name=f'Case {kickid} | Kick | {member}')
         await ctx.send(embed=embed)
         channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
@@ -70,11 +75,16 @@ class moderation(commands.Cog):
         except Exception as error:
             print(error)
         if reason:
-            embed = discord.Embed(title=f'👌 CASE {banid} {member} has been banned for the reason:',
+            embed = discord.Embed(title=f' ', description=f' ',
                                   color=discord.Color.green())
-            embed.add_field(name='\u200b', value=f'**{reason}**', inline=False)
+            embed.set_footer(text=f'Action performed by {ctx.author} ')
+            embed.set_author(name=f'Important | Ban | {member}')
+            embed.add_field(name=f'\u200bReason', value=f'{reason}', inline=False)
         else:
-            embed = discord.Embed(title=f'👌 CASE {banid} {member} has been banned')
+            embed = discord.Embed(title=f' ', description=f' ',
+                                  color=discord.Color.green())
+            embed.set_footer(text=f'Action performed by {ctx.author} ')
+            embed.set_author(name=f'Important | Ban | {member}')
         await ctx.send(embed=embed)
         channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
@@ -136,8 +146,16 @@ class moderation(commands.Cog):
         embed = discord.Embed(title=f'Case {warnid} | Warn | {member}',
                               color=discord.Color.green())
         if reason:
-            embed.add_field(name='Reason', value=f'{reason}', inline=False)
-        embed.set_footer(f'Action performed by {ctx.author} | {warnid}')
+            embed = discord.Embed(title=f' ', description=f' ',
+                                  color=discord.Color.green())
+            embed.set_footer(text=f'Action performed by {ctx.author} | Case {warnid}')
+            embed.set_author(name=f'Case {warnid} | Warn | {member}')
+            embed.add_field(name=f'\u200bReason', value=f'{reason}', inline=False)
+        else:
+            embed = discord.Embed(title=f' ', description=f' ',
+                                  color=discord.Color.green())
+            embed.set_footer(text=f'Action performed by {ctx.author} | Case {warnid}')
+            embed.set_author(name=f'Case {warnid} | Warn | {member}')
         await ctx.send(embed=embed)
         channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
