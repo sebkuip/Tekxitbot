@@ -146,13 +146,13 @@ class moderation(commands.Cog):
         embed = discord.Embed(title=f'Case {warnid} | Warn | {member}',
                               color=discord.Color.green())
         if reason:
-            embed = discord.Embed(title=f'\u200b', description=f'\u200b',
+            embed = discord.Embed(title=f' ', description=f' ',
                                   color=discord.Color.green())
             embed.set_footer(text=f'Action performed by {ctx.author} | Case {warnid}')
             embed.set_author(name=f'Case {warnid} | Warn | {member}')
-            embed.add_field(name=f'Reason', value=f'{reason}', inline=False)
+            embed.add_field(name=f'\u200bReason', value=f'{reason}', inline=False)
         else:
-            embed = discord.Embed(title=f'\u200b', description=f'\u200b',
+            embed = discord.Embed(title=f' ', description=f' ',
                                   color=discord.Color.green())
             embed.set_footer(text=f'Action performed by {ctx.author} | Case {warnid}')
             embed.set_author(name=f'Case {warnid} | Warn | {member}')
