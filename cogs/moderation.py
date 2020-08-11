@@ -148,7 +148,7 @@ class moderation(commands.Cog):
         if reason:
             embed = discord.Embed(title=f' ', description=f' ',
                                   color=discord.Color.green())
-            embed.set_footer(text=f'Action performed by {ctx.author} | Case {warnid}')
+            embed.set_footer(f'Action performed by {ctx.author} | Case {warnid}')
             embed.set_author(name=f'Case {warnid} | Warn | {member}')
             embed.add_field(name=f'\u200bReason', value=f'{reason}', inline=False)
         else:
