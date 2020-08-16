@@ -93,7 +93,8 @@ class moderation(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def tempban(self, ctx, member: discord.Member, time, *, reason=None):
         await ctx.message.delete()
-        embed = discord.Embed(title=f'You have been banned from {ctx.guild.name}', color=discord.Color.green())
+        embed = discord.Embed(title=f'You have been temporary banned from {ctx.guild.name}',
+                              color=discord.Color.green())
         if reason:
             embed.add_field(name='Reason:', value=f'{reason}', inline=False)
         embed.add_field(name='If you have questions:', value=f'If you have questions about this action, or would like '
@@ -111,12 +112,18 @@ class moderation(commands.Cog):
             self.conn.commit()
         except Exception as error:
             print(error)
+
         if reason:
-            embed = discord.Embed(title=f'👌 CASE {banid} {member} has been temporary banned for the reason:',
+            embed = discord.Embed(title=f' ', description=f' ',
                                   color=discord.Color.green())
-            embed.add_field(name='\u200b', value=f'**{reason}**', inline=False)
+            embed.set_footer(text=f'Action performed by {ctx.author} | Case {warnid}')
+            embed.set_author(name=f'Case {warnid} | Temp ban | {member}')
+            embed.add_field(name=f'\u200bReason', value=f'{reason}', inline=False)
         else:
-            embed = discord.Embed(title=f'👌 CASE {banid} {member} has been temporary banned')
+            embed = discord.Embed(title=f' ', description=f' ',
+                                  color=discord.Color.green())
+            embed.set_footer(text=f'Action performed by {ctx.author} | Case {warnid}')
+            embed.set_author(name=f'Case {warnid} | Temp ban | {member}')
         await ctx.send(embed=embed)
         channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
@@ -143,8 +150,6 @@ class moderation(commands.Cog):
         except Exception as error:
             print(error)
 
-        embed = discord.Embed(title=f'Case {warnid} | Warn | {member}',
-                              color=discord.Color.green())
         if reason:
             embed = discord.Embed(title=f' ', description=f' ',
                                   color=discord.Color.green())
