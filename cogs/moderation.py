@@ -128,6 +128,33 @@ class moderation(commands.Cog):
         channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
 
+    @commands.command(help='Unbans the specified member for the specified reason')
+    @commands.has_permissions(ban_members=True)
+    async def unban(self, ctx, member: discord.Object, *, reason=None):
+        await ctx.message.delete()
+        embed = discord.Embed(title=f'You have been unbanned from {ctx.guild.name}', color=discord.Color.green())
+        if reason:
+            embed.add_field(name='Reason:', value=f'{reason}', inline=False)
+        try:
+            await member.send(embed=embed)
+        except discord.Forbidden:
+            await ctx.send('Could not send DM to user')
+        if reason:
+            embed = discord.Embed(title=f' ', description=f' ',
+                                  color=discord.Color.green())
+            embed.set_footer(text=f'Action performed by {ctx.author}')
+            embed.set_author(name=f'Unban | {member}')
+            embed.add_field(name=f'Reason', value=f'{reason}', inline=False)
+        else:
+            embed = discord.Embed(title=f' ', description=f' ',
+                                  color=discord.Color.green())
+            embed.set_footer(text=f'Action performed by {ctx.author}')
+            embed.set_author(name=f'Unban | {member}')
+        await ctx.send(embed=embed)
+        channel = await self.bot.fetch_channel(425632491622105088)
+        await channel.send(embed=embed)
+        await ctx.guild.unban(member, reason=reason)
+
     @commands.command(help='Warns the user for the specified reason')
     @commands.has_permissions(manage_messages=True)
     async def warn(self, ctx, member: discord.User, *, reason=None):
@@ -155,7 +182,7 @@ class moderation(commands.Cog):
                                   color=discord.Color.green())
             embed.set_footer(text=f'Action performed by {ctx.author} | Case {warnid}')
             embed.set_author(name=f'Case {warnid} | Warn | {member}')
-            embed.add_field(name=f'\u200bReason', value=f'{reason}', inline=False)
+            embed.add_field(name=f'Reason', value=f'{reason}', inline=False)
         else:
             embed = discord.Embed(title=f' ', description=f' ',
                                   color=discord.Color.green())
