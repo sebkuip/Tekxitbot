@@ -54,7 +54,7 @@ class moderation(commands.Cog):
 
     @commands.command(help='Bans the specified member for the specified reason')
     @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx, member: discord.Member, *, reason=None):
+    async def ban(self, ctx, member: discord.User, *, reason=None):
         await ctx.message.delete()
         embed = discord.Embed(title=f'You have been banned from {ctx.guild.name}', color=discord.Color.green())
         if reason:
