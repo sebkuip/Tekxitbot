@@ -77,14 +77,14 @@ class moderation(commands.Cog):
         if reason:
             embed = discord.Embed(title=f' ', description=f' ',
                                   color=discord.Color.green())
-            embed.set_footer(text=f'Action performed by {ctx.author} ')
-            embed.set_author(name=f'Important | Ban | {member}')
+            embed.set_footer(text=f'Action performed by {ctx.author} | Case {banid}')
+            embed.set_author(name=f'Case {banid} | Ban | {member}')
             embed.add_field(name=f'\u200bReason', value=f'{reason}', inline=False)
         else:
             embed = discord.Embed(title=f' ', description=f' ',
                                   color=discord.Color.green())
-            embed.set_footer(text=f'Action performed by {ctx.author} ')
-            embed.set_author(name=f'Important | Ban | {member}')
+            embed.set_footer(text=f'Action performed by {ctx.author} | Case {banid}')
+            embed.set_author(name=f'Case {banid} | Ban | {member}')
         await ctx.send(embed=embed)
         channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
