@@ -5,7 +5,7 @@ from discord.ext import commands
 from config import *
 
 
-class moderation(commands.Cog):
+class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot  # This is the bot instance, it lets us interact with most things
         try:
@@ -327,4 +327,4 @@ class moderation(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(moderation(bot))
+    bot.add_cog(Moderation(bot))
