@@ -8,7 +8,7 @@ from discord.ext import commands
 
 from config import *
 
-bot = commands.Bot(command_prefix=PREFIX)
+bot = commands.Bot(command_prefix=PREFIX, case_insenitive=False)
 bot.remove_command('help')
 
 logger = logging.getLogger('latest')
@@ -48,6 +48,7 @@ async def on_ready():
 @bot.event
 async def on_message(message):
     if message.content.startswith(PREFIX):
+        message = message.lower()
         try:
             command = message.content.strip(PREFIX)
             with open(f'cogs/chelp/{command}.txt', 'r') as f:
