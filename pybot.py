@@ -48,9 +48,8 @@ async def on_ready():
 @bot.event
 async def on_message(message):
     if message.content.startswith(PREFIX):
-        message = message.lower()
         try:
-            command = message.content.strip(PREFIX)
+            command = message.content.strip(PREFIX).lower()
             with open(f'cogs/chelp/{command}.txt', 'r') as f:
                 command = f.read()
             await message.channel.send(f'{command}')
