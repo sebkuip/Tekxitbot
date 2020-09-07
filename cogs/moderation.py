@@ -66,7 +66,7 @@ class Moderation(commands.Cog):
             await member.send(embed=embed)
         except discord.Forbidden:
             await ctx.send('Could not send DM to user')
-        await member.ban(reason=reason)
+        await ctx.guild.ban(member, reason=reason)
         try:
             self.cur.execute("INSERT INTO bans(uid, executor, timedate, reason) VALUES(%s, %s, "
                              "CURRENT_TIMESTAMP(1), %s) RETURNING banid", (member.id, ctx.author.id, reason))
@@ -91,7 +91,7 @@ class Moderation(commands.Cog):
 
     @commands.command(help='Bans the specified member for the specified reason for a specified time (DO NOT USE, WIP)')
     @commands.has_permissions(administrator=True)
-    async def tempban(self, ctx, member: discord.Member, time, *, reason=None):
+    async def tempban(self, ctx, member: discord.User, time, *, reason=None):
         await ctx.message.delete()
         embed = discord.Embed(title=f'You have been temporary banned from {ctx.guild.name}',
                               color=discord.Color.green())
@@ -104,7 +104,7 @@ class Moderation(commands.Cog):
             await member.send(embed=embed)
         except discord.Forbidden:
             await ctx.send('Could not send DM to user')
-        await member.ban(reason=reason)
+        await ctx.guild.ban(member, reason=reason)
         try:
             self.cur.execute("INSERT INTO tempbans(uid, executor, timedate, reason) VALUES(%s, %s, "
                              "CURRENT_TIMESTAMP(1), %s) RETURNING banid", (member.id, ctx.author.id, reason))
