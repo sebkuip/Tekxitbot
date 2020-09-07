@@ -11,10 +11,10 @@ class Members(commands.Cog):
     async def on_member_join(self, member):
         # add a few roles to the member on joining
         roles = []
-        for id in JOINROLES:
-            role = member.guild.get_role(id)
+        for roleid in JOINROLES:
+            role = member.guild.get_role(roleid)
             roles.append(role)
-        await member.add_roles(roles)
+        await member.add_roles(*roles)
         # Join message
         channel = self.bot.get_channel(JOINCHANNEL)
         if channel is not None:
