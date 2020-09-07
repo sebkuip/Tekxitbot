@@ -9,6 +9,7 @@ class Members(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
+        await member.add_roles(JOINROLES) # Give the member some roles upon joining
         channel = self.bot.get_channel(JOINCHANNEL)
         if channel is not None:
             await channel.send(f'> <:R3:721722986339631234><:R2:721722986159407115><:R4:721722986356539472>**__New '
