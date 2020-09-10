@@ -21,8 +21,8 @@ logger.addHandler(handler)
 @bot.event
 async def on_ready():
     print(f'{bot.user} has connected to Discord!')
-    print(f'Username is ' + bot.user.name)
-    print(f'ID is ' + str(bot.user.id))
+    print(f'Username is {bot.user.name}')
+    print(f'ID is {bot.user.id}')
     print(f'Keep this window open to keep the bot running.')
     await bot.change_presence(
         activity=discord.Activity(type=discord.ActivityType.listening, name=f"your commands beginning with {PREFIX}"))
