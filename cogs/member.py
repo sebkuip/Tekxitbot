@@ -9,7 +9,13 @@ class Members(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        await member.add_roles(JOINROLES) # Give the member some roles upon joining
+        # add a few roles to the member on joining
+        roles = []
+        for roleid in JOINROLES:
+            role = member.guild.get_role(roleid)
+            roles.append(role)
+        await member.add_roles(*roles)
+        # Join message
         channel = self.bot.get_channel(JOINCHANNEL)
         if channel is not None:
             await channel.send(f'> <:R3:721722986339631234><:R2:721722986159407115><:R4:721722986356539472>**__New '
@@ -21,6 +27,7 @@ class Members(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
+        # Leave message
         channel = self.bot.get_channel(JOINCHANNEL)
         if channel is not None:
             await channel.send(f'> <:R6:721990379158896680> ***{member}***  just left the server :slight_frown:')
