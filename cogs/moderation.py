@@ -1,6 +1,8 @@
 import discord
 import psycopg2
 from discord.ext import commands
+import re
+import datetime
 
 from config import *
 
@@ -93,7 +95,31 @@ class Moderation(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def tempban(self, ctx, member: discord.User, time, *, reason=None):
         await ctx.message.delete()
-        embed = discord.Embed(title=f'You have been temporary banned from {ctx.guild.name}',
+        try:
+            weeks = int(re.findall("\dw", time)[0][0])
+        except IndexError:
+            weeks = 0
+        try:
+            days = int(re.findall("\dd", time)[0][0])
+        except IndexError:
+            days = 0
+        try:
+            hours = int(re.findall("\dh", time)[0][0])
+        except IndexError:
+            hours = 0
+        try:
+            minutes = int(re.findall("\dm", time)[0][0])
+        except IndexError:
+            minutes = 0
+        timedelta = datetime.timedelta(
+            weeks = weeks,
+            days = days,
+            hours = hours,
+            minutes = minutes
+        )
+        endtime = datetime.datetime.now() + timedelta
+            
+        embed = discord.Embed(title=f'You have been temporary banned from {ctx.guild.name}. You have been banned until {endtime}.',
                               color=discord.Color.green())
         if reason:
             embed.add_field(name='Reason:', value=f'{reason}', inline=False)
@@ -106,8 +132,8 @@ class Moderation(commands.Cog):
             await ctx.send('Could not send DM to user')
         await ctx.guild.ban(member, reason=reason)
         try:
-            self.cur.execute("INSERT INTO tempbans(uid, executor, timedate, reason) VALUES(%s, %s, "
-                             "CURRENT_TIMESTAMP(1), %s) RETURNING banid", (member.id, ctx.author.id, reason))
+            self.cur.execute("INSERT INTO tempbans(uid, executor, timedate, endtime, reason) VALUES(%s, %s, "
+                             "CURRENT_TIMESTAMP(1), %s, %s) RETURNING banid", (member.id, ctx.author.id, endtime, reason))
             banid = self.cur.fetchone()[0]
             self.conn.commit()
         except Exception as error:
