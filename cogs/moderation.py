@@ -139,17 +139,13 @@ class Moderation(commands.Cog):
         except Exception as error:
             print(error)
 
+        embed = discord.Embed(title=f' ', description=f' ',
+                                  color=discord.Color.green())
+        embed.set_footer(text=f'Action performed by {ctx.author} | Case {banid}')
+        embed.set_author(name=f'Case {banid} | Temp ban | {member}')
+        embed.add_field(name='End time', value = f'{endtime}', inline=False)
         if reason:
-            embed = discord.Embed(title=f' ', description=f' ',
-                                  color=discord.Color.green())
-            embed.set_footer(text=f'Action performed by {ctx.author} | Case {banid}')
-            embed.set_author(name=f'Case {banid} | Temp ban | {member}')
             embed.add_field(name=f'\u200bReason', value=f'{reason}', inline=False)
-        else:
-            embed = discord.Embed(title=f' ', description=f' ',
-                                  color=discord.Color.green())
-            embed.set_footer(text=f'Action performed by {ctx.author} | Case {banid}')
-            embed.set_author(name=f'Case {banid} | Temp ban | {member}')
         await ctx.send(embed=embed)
         channel = await self.bot.fetch_channel(425632491622105088)
         await channel.send(embed=embed)
