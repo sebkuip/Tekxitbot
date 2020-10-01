@@ -8,7 +8,8 @@ from discord.ext import commands
 
 from config import *
 
-bot = commands.Bot(command_prefix=PREFIX, case_insensitive=True)
+intents = discord.Intents().all()
+bot = commands.Bot(command_prefix=PREFIX, case_insensitive=True, intents=intents)
 bot.remove_command('help')
 
 logger = logging.getLogger('latest')
