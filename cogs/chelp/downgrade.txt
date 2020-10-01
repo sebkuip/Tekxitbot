@@ -1,11 +1,11 @@
->>> :exclamation: **How to downgrade Tekxit 3 to the previous version!**
-~~**--------------------------------------**~~
-**Downgrade to 0.971**
-1. Download **https://www.tekx.it/downloads/0.971Tekxit3.zip**
-2. **Rename the file (zip) you download to tekxit-3-official-1122-0.972**
-3. Put it the **Entire Zip** in **appdata .technic\modpacks\tekxit-3-official-1122\cache**
-4. In Technic Launcher, Click on **Tekxit 3 and press Modpack Options,** 
-5. Click **Reinstall** and then **Close the window. **
-6. Press **Install.**
-:exclamation: **Your client should now be downgraded to .971 and showing as .972.
-If you want to update the pack to the latest version, Use the command ?manualinstall**
+> **:exclamation: How to downgrade Tekxit 3 to the previous version!**
+> **~~--------------------------------------~~**
+> **Downgrade to 0.981**
+> 1. Download** https://www.tekx.it/downloads/0.981Tekxit3.zip **
+> 2. **Rename the file (zip) you download to tekxit-3-official-1122-0.990**
+> 3. Put it the **Entire Zip** in **appdata .technic\modpacks\tekxit-3-official-1122\cache**
+> 4. In Technic Launcher, Click on **Tekxit 3 and press Modpack Options, **
+> 5. Click **Reinstall** and then **Close the window. **
+> 6. Press** Install.**
+> **:exclamation: Your client should now be downgraded to .981 and showing as .990.
+> If you want to update the pack to the latest version, Use the command ?manualinstall**

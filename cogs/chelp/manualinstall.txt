@@ -1,8 +1,8 @@
 >>> :exclamation: When Tekxit 3 doesn't work try the manual install steps below!
 ~~**--------------------------------------**~~
 **Manual Install | Fix install Error**
-1. Download https://www.tekx.it/downloads/0.972Tekxit3.zip
-2. **Rename** the file (zip) you downloaded to 'tekxit-3-official-1122-0.972.zip'
+1. Download https://www.tekx.it/downloads/0.990Tekxit3.zip
+2. **Rename** the file (zip) you downloaded to 'tekxit-3-official-1122-0.990.zip'
 3. Go to **%Appdata%**
 4. Open **.technic**
 5. Open **Modpacks**
