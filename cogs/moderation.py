@@ -95,22 +95,11 @@ class Moderation(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def tempban(self, ctx, member: discord.User, time, *, reason=None):
         await ctx.message.delete()
-        try:
-            weeks = int(re.findall("\dw", time)[0][0])
-        except IndexError:
-            weeks = 0
-        try:
-            days = int(re.findall("\dd", time)[0][0])
-        except IndexError:
-            days = 0
-        try:
-            hours = int(re.findall("\dh", time)[0][0])
-        except IndexError:
-            hours = 0
-        try:
-            minutes = int(re.findall("\dm", time)[0][0])
-        except IndexError:
-            minutes = 0
+        weeks = int((re.findall("(\d)w", time) or "0")[0])
+        days = int((re.findall("(\d)d", time) or "0")[0])
+        hours = int((re.findall("(\d)h", time) or "0")[0])
+        minutes = int((re.findall("(\d)m", time) or "0")[0])
+
         timedelta = datetime.timedelta(
             weeks = weeks,
             days = days,
