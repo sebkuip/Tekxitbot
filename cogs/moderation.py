@@ -1,5 +1,5 @@
 import discord
-import psycopg2
+import asyncpg
 from discord.ext import commands
 import re
 import datetime
@@ -10,12 +10,6 @@ from config import *
 class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot  # This is the bot instance, it lets us interact with most things
-        try:
-            self.conn = psycopg2.connect(host=HOST, port=PORT, database=DATABASE, user=USER,
-                                         password=PASSWORD)
-            self.cur = self.conn.cursor()
-        except (Exception, psycopg2.DatabaseError):
-            pass
 
     @commands.command(help='Kicks the specified member for the specified reason')
     @commands.has_permissions(kick_members=True)
@@ -33,10 +27,9 @@ class Moderation(commands.Cog):
             await ctx.send('Could not send DM to user')
         await member.kick(reason=reason)
         try:
-            self.cur.execute("INSERT INTO kicks(uid, executor, timedate, reason) VALUES(%s, %s, "
-                             "CURRENT_TIMESTAMP(1), %s) RETURNING kickid", (member.id, ctx.author.id, reason))
-            kickid = self.cur.fetchone()[0]
-            self.conn.commit()
+            kickid = await self.bot.con.fetchrow("INSERT INTO kicks(uid, executor, timedate, reason) VALUES($1, $2, "
+                             "CURRENT_TIMESTAMP(1), $3) RETURNING kickid", member.id, ctx.author.id, reason)
+            kickid = result[0]
         except Exception as error:
             print(error)
         if reason:
@@ -44,15 +37,14 @@ class Moderation(commands.Cog):
                                   color=discord.Color.green())
             embed.set_footer(text=f'Action performed by {ctx.author} | Case {kickid}')
             embed.set_author(name=f'Case {kickid} | Kick | {member}')
-            embed.add_field(name=f'\u200bReason', value=f'{reason}', inline=False)
+            embed.add_field(name=f'Reason', value=f'{reason}', inline=False)
         else:
             embed = discord.Embed(title=f' ', description=f' ',
                                   color=discord.Color.green())
             embed.set_footer(text=f'Action performed by {ctx.author} | Case {kickid}')
             embed.set_author(name=f'Case {kickid} | Kick | {member}')
         await ctx.send(embed=embed)
-        channel = await self.bot.fetch_channel(425632491622105088)
-        await channel.send(embed=embed)
+        await self.bot.logchannel.send(embed=embed)
 
     @commands.command(help='Bans the specified member for the specified reason')
     @commands.has_permissions(ban_members=True)
@@ -70,26 +62,22 @@ class Moderation(commands.Cog):
             await ctx.send('Could not send DM to user')
         await ctx.guild.ban(member, reason=reason)
         try:
-            self.cur.execute("INSERT INTO bans(uid, executor, timedate, reason) VALUES(%s, %s, "
-                             "CURRENT_TIMESTAMP(1), %s) RETURNING banid", (member.id, ctx.author.id, reason))
-            banid = self.cur.fetchone()[0]
-            self.conn.commit()
+            result = await self.bot.con.fetchrow("INSERT INTO bans(uid, executor, timedate, reason) VALUES($1, $2, "
+                             "CURRENT_TIMESTAMP(1), $3) RETURNING banid", (member.id, ctx.author.id, reason))
+            banid = result[0]
         except Exception as error:
             print(error)
+
+        embed = discord.Embed(title=f' ', description=f' ',
+                              color=discord.Color.green())
+        embed.set_footer(text=f'Action performed by {ctx.author} | Case {banid}')
+        embed.set_author(name=f'Case {banid} | Ban | {member}')
         if reason:
-            embed = discord.Embed(title=f' ', description=f' ',
-                                  color=discord.Color.green())
-            embed.set_footer(text=f'Action performed by {ctx.author} | Case {banid}')
-            embed.set_author(name=f'Case {banid} | Ban | {member}')
-            embed.add_field(name=f'\u200bReason', value=f'{reason}', inline=False)
-        else:
-            embed = discord.Embed(title=f' ', description=f' ',
-                                  color=discord.Color.green())
-            embed.set_footer(text=f'Action performed by {ctx.author} | Case {banid}')
-            embed.set_author(name=f'Case {banid} | Ban | {member}')
+            embed.add_field(name=f'Reason', value=f'{reason}', inline=False)
+
         await ctx.send(embed=embed)
-        channel = await self.bot.fetch_channel(425632491622105088)
-        await channel.send(embed=embed)
+        
+        await self.bot.logchannel.send(embed=embed)
 
     @commands.command(help='Bans the specified member for the specified reason for a specified time (DO NOT USE, WIP)')
     @commands.has_permissions(administrator=True)
@@ -121,10 +109,9 @@ class Moderation(commands.Cog):
             await ctx.send('Could not send DM to user')
         await ctx.guild.ban(member, reason=reason)
         try:
-            self.cur.execute("INSERT INTO tempbans(uid, executor, timedate, endtime, reason) VALUES(%s, %s, "
-                             "CURRENT_TIMESTAMP(1), %s, %s) RETURNING banid", (member.id, ctx.author.id, endtime, reason))
-            banid = self.cur.fetchone()[0]
-            self.conn.commit()
+            result = await self.bot.con.fetchrow("INSERT INTO tempbans(uid, executor, timedate, endtime, reason) VALUES($1, $2, "
+                             "CURRENT_TIMESTAMP(1), $3, $4) RETURNING banid", (member.id, ctx.author.id, endtime, reason))
+            banid = result[0]
         except Exception as error:
             print(error)
 
@@ -134,10 +121,9 @@ class Moderation(commands.Cog):
         embed.set_author(name=f'Case {banid} | Temp ban | {member}')
         embed.add_field(name='End time', value = f'{endtime}', inline=False)
         if reason:
-            embed.add_field(name=f'\u200bReason', value=f'{reason}', inline=False)
+            embed.add_field(name=f'Reason', value=f'{reason}', inline=False)
         await ctx.send(embed=embed)
-        channel = await self.bot.fetch_channel(425632491622105088)
-        await channel.send(embed=embed)
+        await self.bot.logchannel.send(embed=embed)
 
     @commands.command(help='Unbans the specified member for the specified reason')
     @commands.has_permissions(ban_members=True)
@@ -150,20 +136,16 @@ class Moderation(commands.Cog):
             await member.send(embed=embed)
         except discord.Forbidden:
             await ctx.send('Could not send DM to user')
+        
+        embed = discord.Embed(title=f' ', description=f' ',
+                              color=discord.Color.green())
+        embed.set_footer(text=f'Action performed by {ctx.author}')
+        embed.set_author(name=f'Unban | {member}')
         if reason:
-            embed = discord.Embed(title=f' ', description=f' ',
-                                  color=discord.Color.green())
-            embed.set_footer(text=f'Action performed by {ctx.author}')
-            embed.set_author(name=f'Unban | {member}')
             embed.add_field(name=f'Reason', value=f'{reason}', inline=False)
-        else:
-            embed = discord.Embed(title=f' ', description=f' ',
-                                  color=discord.Color.green())
-            embed.set_footer(text=f'Action performed by {ctx.author}')
-            embed.set_author(name=f'Unban | {member}')
+        
         await ctx.send(embed=embed)
-        channel = await self.bot.fetch_channel(425632491622105088)
-        await channel.send(embed=embed)
+        await self.bot.logchannel.send(embed=embed)
         await ctx.guild.unban(member, reason=reason)
 
     @commands.command(help='Warns the user for the specified reason')
@@ -181,66 +163,107 @@ class Moderation(commands.Cog):
         except discord.Forbidden:
             await ctx.send('Could not send DM to user')
         try:
-            self.cur.execute("INSERT INTO warnings(uid, executor, timedate, reason) VALUES(%s, "
-                             "%s, CURRENT_TIMESTAMP(1), %s) RETURNING warnid", (member.id, ctx.author.id, reason))
-            warnid = self.cur.fetchone()[0]
-            self.conn.commit()
+            result = await self.bot.con.fetchrow("INSERT INTO warnings(uid, executor, timedate, reason) VALUES($1, "
+                                       "$2, CURRENT_TIMESTAMP(1), $3) RETURNING warnid", member.id, str(ctx.author.id), reason)
+            warnid = result[0]
         except Exception as error:
             print(error)
 
+        embed = discord.Embed(color=discord.Color.green())
+        embed.set_footer(text=f'Action performed by {ctx.author} | Case {warnid}')
+        embed.set_author(name=f'Case {warnid} | Warn | {member}')
+
         if reason:
-            embed = discord.Embed(title=f' ', description=f' ',
-                                  color=discord.Color.green())
-            embed.set_footer(text=f'Action performed by {ctx.author} | Case {warnid}')
-            embed.set_author(name=f'Case {warnid} | Warn | {member}')
             embed.add_field(name=f'Reason', value=f'{reason}', inline=False)
-        else:
-            embed = discord.Embed(title=f' ', description=f' ',
-                                  color=discord.Color.green())
-            embed.set_footer(text=f'Action performed by {ctx.author} | Case {warnid}')
-            embed.set_author(name=f'Case {warnid} | Warn | {member}')
+        
         await ctx.send(embed=embed)
-        channel = await self.bot.fetch_channel(425632491622105088)
-        await channel.send(embed=embed)
+        await self.bot.logchannel.send(embed=embed)
 
     @commands.command(help='View all infractions for a user')
     @commands.has_permissions(manage_messages=True)
     async def infractions(self, ctx, member: discord.Member):
         await ctx.message.delete()
         try:
-            embed = discord.Embed(color=0xb277dd)
-            self.cur.execute("SELECT * FROM warnings WHERE uid = %s", (member.id,))
-            warns = self.cur.fetchall()
-            self.cur.execute("SELECT * FROM kicks WHERE uid = %s", (member.id,))
-            kicks = self.cur.fetchall()
-            self.cur.execute("SELECT * FROM bans WHERE uid = %s", (member.id,))
-            bans = self.cur.fetchall()
-            embed.set_author(name=str(member), icon_url=member.avatar_url)
-            # warnings
-            embed.add_field(name='\u200b', value='Warnings:', inline=False)
-            for warn in warns:
-                invoker = await self.bot.fetch_user(warn[2])
-                datetime = str(warn[3])[0:-7]
-                embed.add_field(name='ID: ' + str(warn[0]),
-                                value=f'When: {datetime} UTC\nExecutor: {invoker}\nReason: {warn[4]}', inline=False)
-            # kicks
-            embed.add_field(name='\u200b', value='Kicks:', inline=False)
-            for kick in kicks:
-                invoker = await self.bot.fetch_user(kick[2])
-                datetime = str(kick[3])[0:-7]
-                embed.add_field(name='ID: ' + str(kick[0]),
-                                value=f'When: {datetime} UTC\nExecutor: {invoker}\nReason: {kick[4]}', inline=False)
-            # bans
-            embed.add_field(name='\u200b', value='Bans:', inline=False)
-            for ban in bans:
-                invoker = await self.bot.fetch_user(ban[2])
-                datetime = str(ban[3])[0:-7]
-                if ban[4]:
-                    enddatetime = str(ban[5])
-                embed.add_field(name='ID: ' + str(ban[0]),
-                                value=f'When: {datetime} UTC\nExecutor: {invoker}\nReason: {ban[6]}\nTemporary: {ban[4]}\nend: {enddatetime}',
-                                inline=False)
-            await ctx.send(embed=embed)
+            warns = await self.bot.con.fetch("SELECT * FROM warnings WHERE uid = $1", member.id)
+            kicks = await self.bot.con.fetch("SELECT * FROM kicks WHERE uid = $1", member.id)
+            bans = await self.bot.con.fetch("SELECT * FROM bans WHERE uid = $1", member.id)
+            tempbans = await self.bot.con.fetch("SELECT * FROM bans WHERE uid = $1", member.id)
+
+            embeds = [[],[],[],[]]
+            for i in range(0, len(warns)//25+1):
+                embeds[0].append(discord.Embed(color=0xb277dd))
+            for i in range(0, len(kicks)//25+1):
+                embeds[1].append(discord.Embed(color=0xb277dd))
+            for i in range(0, len(bans)//25+1):
+                embeds[2].append(discord.Embed(color=0xb277dd))
+            for i in range(0, len(tempbans)//25+1):
+                embeds[3].append(discord.Embed(color=0xb277dd))
+            
+            
+            await ctx.send(f"Showing infractions for {member} (This could take some time)")
+            async with ctx.typing():
+                # warnings
+                for i, warn in enumerate(warns):
+                    warnid = warn[0]
+                    invoker = self.bot.get_user(warn[2]) or await self.bot.fetch_user(warn[2])
+                    datetime = str(warn[3])[0:-7]
+                    reason = warn[4]
+
+                    embeds[0][i//25].add_field(name=f'ID: {warnid}', value=f'When: {datetime} UTC\nExecutor:{invoker}\nReason: {reason}')
+
+                # kicks
+                for i, kick in enumerate(kicks):
+                    kickid = kick[0]
+                    invoker = await self.bot.fetch_user(kick[2])
+                    datetime = str(kick[3])[0:-7]
+                    reason = kick[4]
+
+                    embeds[1][i//25].add_field(name=f'ID: {kickid}', value=f'When: {datetime} UTC\nExecutor: {invoker}\nReason: {reason}')
+                
+                # bans
+                for i, ban in enumerate(bans):
+                    banid = ban[0]
+                    invoker = await self.bot.fetch_user(ban[2])
+                    datetime = str(ban[3])[0:-7]
+                    reason = ban[4]
+
+                    embeds[2][i//25].add_field(name=f'ID: {banid}', value=f'When: {datetime} UTC\nExecutor: {invoker}\nReason: {reason}')
+                
+                #tempbans
+                for ban in tempbans:
+                    banid = ban[0]
+                    invoker = await self.bot.fetch_user(ban[2])
+                    datetime = str(ban[3])[0:-7]
+                    end = ban[4]
+                    reason = ban[5]
+
+                    embeds[3][i//25].add_field(name=f'ID: {banid}', value=f'When: {datetime} UTC\nExecutor: {invoker}\nEnd date time: {end}\nReason: {reason}')
+
+
+                await ctx.send('Warnings:')
+                for embed in embeds[0]:
+                    if not embed:
+                        embed.add_field(name='No warns found', value='\u200b')
+                    await ctx.send(embed=embed)
+
+                await ctx.send('Kicks:')
+                for embed in embeds[1]:
+                    if not embed:
+                        embed.add_field(name='No kicks found', value='\u200b')
+                    await ctx.send(embed=embed)
+
+                await ctx.send('Bans:')
+                for embed in embeds[2]:
+                    if not embed:
+                        embed.add_field(name='No bans found', value='\u200b')
+                    await ctx.send(embed=embed)
+
+                await ctx.send('Tempbans:')
+                for embed in embeds[3]:
+                    if not embed:
+                        embed.add_field(name='No temp bans found', value='\u200b')
+                    await ctx.send(embed=embed)
+                
         except Exception as error:
             print(error)
 
@@ -249,44 +272,38 @@ class Moderation(commands.Cog):
     async def delwarn(self, ctx, warnid: int):
         await ctx.message.delete()
         try:
-            self.cur.execute("DELETE FROM warnings WHERE warnid = %s", (warnid,))
+            await self.bot.con.execute("DELETE FROM warnings WHERE warnid = $1", warnid)
             await ctx.send(f'Successfully deleted warn with ID: {warnid}')
         except:
             await ctx.send(f'Could not find warn with ID: {warnid}')
-        finally:
-            self.conn.commit()
 
     @commands.command(help='Delete a kick')
     @commands.has_permissions(manage_messages=True)
     async def delkick(self, ctx, kickid: int):
         await ctx.message.delete()
         try:
-            self.cur.execute("DELETE FROM kicks WHERE kickid = %s", (kickid,))
+            await self.bot.con.execute("DELETE FROM kicks WHERE kickid = $1", kickid)
             await ctx.send(f'Successfully deleted kick with ID: {kickid}')
         except:
             await ctx.send(f'Could not find kick with ID: {kickid}')
-        finally:
-            self.conn.commit()
 
     @commands.command(help='Delete a ban')
     @commands.has_permissions(manage_messages=True)
     async def delban(self, ctx, banid: int):
         await ctx.message.delete()
         try:
-            self.cur.execute("DELETE FROM bans WHERE kickid = %s", (banid,))
+            await self.bot.con.execute("DELETE FROM bans WHERE kickid = $1", banid)
             await ctx.send(f'Successfully deleted ban with ID: {banid}')
         except:
             await ctx.send(f'Could not find ban with ID: {banid}')
-        finally:
-            self.conn.commit()
+
 
     @commands.command(help='Check out a warning case')
     @commands.has_permissions(manage_messages=True)
     async def warncase(self, ctx, warnid: int):
         await ctx.message.delete()
         try:
-            self.cur.execute("SELECT * FROM warnings WHERE warnid = %s", (warnid,))
-            case = self.cur.fetchone()
+            case = await self.bot.con.fetchrow("SELECT * FROM warnings WHERE warnid = $1", warnid)
             embed = discord.Embed(color=0xb277dd)
             member = await self.bot.fetch_user(case[1])
             embed.set_author(name=str(member), icon_url=member.avatar_url)
@@ -303,8 +320,7 @@ class Moderation(commands.Cog):
     async def kickcase(self, ctx, kickid: int):
         await ctx.message.delete()
         try:
-            self.cur.execute("SELECT * FROM kicks WHERE kickid = %s", (kickid,))
-            case = self.cur.fetchone()
+            case = await self.bot.con.fetchrow("SELECT * FROM kicks WHERE kickid = $1", kickid)
             embed = discord.Embed(color=0xb277dd)
             member = await self.bot.fetch_user(case[1])
             embed.set_author(name=str(member), icon_url=member.avatar_url)
@@ -321,8 +337,7 @@ class Moderation(commands.Cog):
     async def bancase(self, ctx, banid: int):
         await ctx.message.delete()
         try:
-            self.cur.execute("SELECT * FROM bans WHERE banid = %s", (banid,))
-            case = self.cur.fetchone()
+            case = self.bot.con.fetchrow("SELECT * FROM bans WHERE banid = %s", banid)
             embed = discord.Embed(color=0xb277dd)
             member = await self.bot.fetch_user(case[1])
             embed.set_author(name=str(member), icon_url=member.avatar_url)

@@ -3,5 +3,5 @@ discord
 asyncio
 typing
 requests
-psycopg2
+asyncpg
 wikia

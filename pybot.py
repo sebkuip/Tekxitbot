@@ -3,7 +3,7 @@ import asyncio
 import logging
 
 import discord
-import psycopg2
+import asyncpg
 from discord.ext import commands
 
 from config import *
@@ -28,16 +28,17 @@ async def on_ready():
     await bot.change_presence(
         activity=discord.Activity(type=discord.ActivityType.listening, name=f"your commands beginning with {PREFIX}"))
 
+    bot.logchannel = await bot.fetch_channel(425632491622105088)
+
     # database
     print('Connecting to database')
     try:
-        conn = psycopg2.connect(host=HOST, port=PORT, database=DATABASE, user=USER,
+        bot.con = await asyncpg.connect(host=HOST, port=PORT, database=DATABASE, user=USER,
                                 password=PASSWORD)
-        cur = conn.cursor()
-        cur.execute('SELECT version()')
-        db_version = cur.fetchone()
-        print(f'Database version: PostgreSQL {db_version}')
-    except (Exception, psycopg2.DatabaseError) as error:
+        result = await bot.con.fetchrow('SELECT version()')
+        db_version = result[0]
+        print(f'Database version: {db_version}')
+    except Exception as error:
         print(error)
 
 
@@ -55,7 +56,7 @@ async def on_message(message):
                 command = f.read()
             await message.channel.send(f'{command}')
             await message.delete()
-        except FileNotFoundError:
+        except FileNotFoundError or OSError:
             await bot.process_commands(message)
 
 
