@@ -27,7 +27,7 @@ class Moderation(commands.Cog):
             await ctx.send('Could not send DM to user')
         await member.kick(reason=reason)
         try:
-            kickid = await self.bot.con.fetchrow("INSERT INTO kicks(uid, executor, timedate, reason) VALUES($1, $2, "
+            result = await self.bot.con.fetchrow("INSERT INTO kicks(uid, executor, timedate, reason) VALUES($1, $2, "
                              "CURRENT_TIMESTAMP(1), $3) RETURNING kickid", member.id, ctx.author.id, reason)
             kickid = result[0]
         except Exception as error:

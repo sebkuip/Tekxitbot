@@ -2,7 +2,7 @@
 ~~**--------------------------------------**~~
 1. **Download and extract MultiMC **at https://multimc.org
 2. Open the MultiMC folder you extracted and click **"MultiMC.exe" **to start it 
-3. **Download **https://www.tekx.it/downloads/Tekxit-3-v0.981-MultiMC.zip
+3. **Download **https://www.tekx.it/downloads/Tekxit-3-v0.990-MultiMC.zip
 4. In MultiMC **Click:**
 ► Add Instance 
 ► Import from zip 
