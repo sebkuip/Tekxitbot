@@ -214,7 +214,7 @@ class Moderation(commands.Cog):
                 # kicks
                 for i, kick in enumerate(kicks):
                     kickid = kick[0]
-                    invoker = await self.bot.fetch_user(kick[2])
+                    invoker = self.bot.get_user(kick[2]) or await self.bot.fetch_user(kick[2])
                     datetime = str(kick[3])[0:-7]
                     reason = kick[4]
 
@@ -223,7 +223,7 @@ class Moderation(commands.Cog):
                 # bans
                 for i, ban in enumerate(bans):
                     banid = ban[0]
-                    invoker = await self.bot.fetch_user(ban[2])
+                    invoker = self.bot.get_user(ban[2]) or await self.bot.fetch_user(ban[2])
                     datetime = str(ban[3])[0:-7]
                     reason = ban[4]
 
@@ -232,7 +232,7 @@ class Moderation(commands.Cog):
                 #tempbans
                 for ban in tempbans:
                     banid = ban[0]
-                    invoker = await self.bot.fetch_user(ban[2])
+                    invoker = self.bot.get_user(ban[2]) or await self.bot.fetch_user(ban[2])
                     datetime = str(ban[3])[0:-7]
                     end = ban[4]
                     reason = ban[5]
