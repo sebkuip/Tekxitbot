@@ -64,8 +64,15 @@ class Commands(commands.Cog):
                     embed.add_field(name=link, value=summary)
                     embed.set_footer(text='If you want to edit this page, click the link at the top of this message')
                     await ctx.send(embed=embed)
-                except Exception as E:
-                    raise E
+                except Exception as e:
+                    raise e
+
+    @commands.command(help='show someone\'s profile picture', name='pfp')
+    async def profilepicture(self, ctx, member: discord.User = None):
+        if not member:
+            member = ctx.author
+        pic = member.avatar_url
+        await ctx.send(pic)
 
 
 def setup(bot):
