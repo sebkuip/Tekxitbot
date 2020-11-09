@@ -65,7 +65,6 @@ async def reload(ctx, name):
     name = name.lower()
     await ctx.send(f'reloading cog {name}')
     bot.unload_extension(f'cogs.{name}')
-    await asyncio.sleep(1)
     try:
         bot.load_extension(f'cogs.{name}')
         await ctx.send(f'reloaded cog {name}')
