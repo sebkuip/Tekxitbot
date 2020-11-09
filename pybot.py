@@ -9,7 +9,8 @@ from discord.ext import commands
 from config import *
 
 intents = discord.Intents().all()
-bot = commands.Bot(command_prefix=PREFIX, case_insensitive=True, intents=intents)
+activity = discord.BaseActivity(type=discord.ActivityType.listening, name=f"your commands beginning with {PREFIX}")
+bot = commands.Bot(command_prefix=PREFIX, case_insensitive=True, intents=intents, activity=activity)
 bot.remove_command('help')
 
 logger = logging.getLogger('latest')
@@ -25,8 +26,6 @@ async def on_ready():
     print(f'Username is {bot.user.name}')
     print(f'ID is {bot.user.id}')
     print(f'Keep this window open to keep the bot running.')
-    await bot.change_presence(
-        activity=discord.Activity(type=discord.ActivityType.listening, name=f"your commands beginning with {PREFIX}"))
 
     bot.logchannel = await bot.fetch_channel(425632491622105088)
 
