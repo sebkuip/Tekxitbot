@@ -72,22 +72,13 @@ async def reload(ctx, name):
         print(f"Failed to load extension {extension}.")
         print(error)
 
-
-initial_extensions = [
-    'cogs.commands',
-    'cogs.help',
-    'cogs.errorhandler',
-    'cogs.moderation',
-    'cogs.customcommands',
-    'cogs.member'
-]
-
 if __name__ == '__main__':
-    for extension in initial_extensions:
-        try:
-            bot.load_extension(extension)
-        except Exception as e:
-            print(f"Failed to load extension {extension}.")
-            print(e)
+    for filename in os.listdir('./cogs'):
+        if filename.endswith('.py'):
+            try:
+                client.load_extension(f'cogs.{filename[:-3]}')
+            except Exception as e:
+                print(f"Failed to load extension {extension}.")
+                print(e)
 
 bot.run(TOKEN)
