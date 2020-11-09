@@ -9,7 +9,7 @@ from discord.ext import commands
 from config import *
 
 intents = discord.Intents().all()
-activity = discord.BaseActivity(type=discord.ActivityType.listening, name=f"your commands beginning with {PREFIX}")
+activity = discord.Activity(type=discord.ActivityType.listening, name=f"your commands beginning with {PREFIX}")
 bot = commands.Bot(command_prefix=PREFIX, case_insensitive=True, intents=intents, activity=activity)
 bot.remove_command('help')
 
