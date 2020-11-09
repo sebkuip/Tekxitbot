@@ -1,6 +1,7 @@
 # bot.py
 import asyncio
 import logging
+import os
 
 import discord
 import asyncpg
@@ -73,10 +74,10 @@ async def reload(ctx, name):
         print(error)
 
 if __name__ == '__main__':
-    for filename in os.listdir('./cogs'):
-        if filename.endswith('.py'):
+    for extension in os.listdir('./cogs'):
+        if extension.endswith('.py'):
             try:
-                client.load_extension(f'cogs.{filename[:-3]}')
+                bot.load_extension(f'cogs.{extension[:-3]}')
             except Exception as e:
                 print(f"Failed to load extension {extension}.")
                 print(e)
