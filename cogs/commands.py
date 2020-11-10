@@ -71,6 +71,8 @@ class Commands(commands.Cog):
     async def profilepicture(self, ctx, member: discord.Object = None):
         if not member:
             member = ctx.author
+        else:
+            member = self.bot.get_user(member.id) or await self.bot.fetch_user(member.id)
         pic = member.avatar_url
         await ctx.send(pic)
 
