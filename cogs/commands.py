@@ -68,10 +68,10 @@ class Commands(commands.Cog):
                     raise e
 
     @commands.command(help='show someone\'s profile picture', name='pfp')
-    async def profilepicture(self, ctx, member: discord.Object = None):
+    async def profilepicture(self, ctx, member: typing.Union[discord.User, discord.Object]):
         if not member:
             member = ctx.author
-        else:
+        elif isinstance(member, discord.Object):
             member = self.bot.get_user(member.id) or await self.bot.fetch_user(member.id)
         pic = member.avatar_url
         await ctx.send(pic)
