@@ -1,6 +1,7 @@
 # bot.py
 import asyncio
 import logging
+import os
 
 import discord
 import asyncpg
@@ -9,7 +10,8 @@ from discord.ext import commands
 from config import *
 
 intents = discord.Intents().all()
-bot = commands.Bot(command_prefix=PREFIX, case_insensitive=True, intents=intents)
+activity = discord.Activity(type=discord.ActivityType.listening, name=f"your commands beginning with {PREFIX}")
+bot = commands.Bot(command_prefix=PREFIX, case_insensitive=True, intents=intents, activity=activity)
 bot.remove_command('help')
 
 logger = logging.getLogger('latest')
@@ -25,8 +27,6 @@ async def on_ready():
     print(f'Username is {bot.user.name}')
     print(f'ID is {bot.user.id}')
     print(f'Keep this window open to keep the bot running.')
-    await bot.change_presence(
-        activity=discord.Activity(type=discord.ActivityType.listening, name=f"your commands beginning with {PREFIX}"))
 
     bot.logchannel = await bot.fetch_channel(425632491622105088)
 
@@ -66,7 +66,6 @@ async def reload(ctx, name):
     name = name.lower()
     await ctx.send(f'reloading cog {name}')
     bot.unload_extension(f'cogs.{name}')
-    await asyncio.sleep(1)
     try:
         bot.load_extension(f'cogs.{name}')
         await ctx.send(f'reloaded cog {name}')
@@ -74,22 +73,13 @@ async def reload(ctx, name):
         print(f"Failed to load extension {extension}.")
         print(error)
 
-
-initial_extensions = [
-    'cogs.commands',
-    'cogs.help',
-    'cogs.errorhandler',
-    'cogs.moderation',
-    'cogs.customcommands',
-    'cogs.member'
-]
-
 if __name__ == '__main__':
-    for extension in initial_extensions:
-        try:
-            bot.load_extension(extension)
-        except Exception as e:
-            print(f"Failed to load extension {extension}.")
-            print(e)
+    for extension in os.listdir('./cogs'):
+        if extension.endswith('.py'):
+            try:
+                bot.load_extension(f'cogs.{extension[:-3]}')
+            except Exception as e:
+                print(f"Failed to load extension {extension}.")
+                print(e)
 
 bot.run(TOKEN)

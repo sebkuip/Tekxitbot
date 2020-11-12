@@ -7,6 +7,23 @@ import typing
 
 from config import *
 
+#banned user converter
+class BannedMember(commands.Converter):
+    async def convert(self, ctx, argument):
+        if argument.isdigit():
+            member_id = int(argument, base=10)
+            try:
+                return await ctx.guild.fetch_ban(discord.Object(id=member_id))
+            except discord.NotFound:
+                raise commands.BadArgument('This member has not been banned before.') from None
+
+        ban_list = await ctx.guild.bans()
+        entity = discord.utils.find(lambda u: str(u.user) == argument, ban_list)
+
+        if entity is None:
+            raise commands.BadArgument('This member has not been banned before.')
+        return entity
+
 
 class Moderation(commands.Cog):
     def __init__(self, bot):
@@ -128,7 +145,7 @@ class Moderation(commands.Cog):
 
     @commands.command(help='Unbans the specified member for the specified reason')
     @commands.has_permissions(ban_members=True)
-    async def unban(self, ctx, member: discord.Object, *, reason=None):
+    async def unban(self, ctx, member: BannedMember, *, reason=None):
         await ctx.message.delete()
         embed = discord.Embed(title=f'You have been unbanned from {ctx.guild.name}', color=discord.Color.green())
         if reason:
@@ -215,7 +232,7 @@ class Moderation(commands.Cog):
                 # kicks
                 for i, kick in enumerate(kicks):
                     kickid = kick[0]
-                    invoker = await self.bot.fetch_user(kick[2])
+                    invoker = self.bot.get_user(kick[2]) or await self.bot.fetch_user(kick[2])
                     datetime = str(kick[3])[0:-7]
                     reason = kick[4]
 
@@ -224,7 +241,7 @@ class Moderation(commands.Cog):
                 # bans
                 for i, ban in enumerate(bans):
                     banid = ban[0]
-                    invoker = await self.bot.fetch_user(ban[2])
+                    invoker = self.bot.get_user(ban[2]) or await self.bot.fetch_user(ban[2])
                     datetime = str(ban[3])[0:-7]
                     reason = ban[4]
 
@@ -233,7 +250,7 @@ class Moderation(commands.Cog):
                 #tempbans
                 for ban in tempbans:
                     banid = ban[0]
-                    invoker = await self.bot.fetch_user(ban[2])
+                    invoker = self.bot.get_user(ban[2]) or await self.bot.fetch_user(ban[2])
                     datetime = str(ban[3])[0:-7]
                     end = ban[4]
                     reason = ban[5]
