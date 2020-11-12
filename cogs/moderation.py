@@ -78,7 +78,7 @@ class Moderation(commands.Cog):
             await member.send(embed=embed)
         except discord.Forbidden:
             await ctx.send('Could not send DM to user')
-        await ctx.guild.ban(member, reason=reason)
+        await ctx.guild.ban(member, reason=reason, delete_message_days=0)
         try:
             result = await self.bot.con.fetchrow("INSERT INTO bans(uid, executor, timedate, reason) VALUES($1, $2, "
                              "CURRENT_TIMESTAMP(1), $3) RETURNING banid", member.id, ctx.author.id, reason)
@@ -125,7 +125,7 @@ class Moderation(commands.Cog):
             await member.send(embed=embed)
         except discord.Forbidden:
             await ctx.send('Could not send DM to user')
-        await ctx.guild.ban(member, reason=reason)
+        await ctx.guild.ban(member, reason=reason, delete_message_days=1)
         try:
             result = await self.bot.con.fetchrow("INSERT INTO tempbans(uid, executor, timedate, endtime, reason) VALUES($1, $2, "
                              "CURRENT_TIMESTAMP(1), $3, $4) RETURNING banid", member.id, ctx.author.id, endtime, reason)
