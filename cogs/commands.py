@@ -14,7 +14,7 @@ class Commands(commands.Cog):
     async def ping(self, ctx):
         await ctx.send(f'My ping is ' + str(round(self.bot.latency, 5) * 1000) + 'ms')
 
-    @commands.command(help='Allows you to talk as the bot in the specified channel or current if non is specified')
+    @commands.command(help='Allows you to talk as the bot in the specified channel or current if non is specified', name='say')
     @commands.has_permissions(administrator=True)
     async def echo(self, ctx, channel: typing.Optional[discord.TextChannel] = None, *, text):
         if channel is None:
