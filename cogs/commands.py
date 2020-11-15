@@ -68,7 +68,7 @@ class Commands(commands.Cog):
                     raise e
 
     @commands.command(help='show someone\'s profile picture', name='pfp')
-    async def profilepicture(self, ctx, member: typing.Union[discord.User, discord.Object]):
+    async def profilepicture(self, ctx, member: typing.Optional[typing.Union[discord.User, discord.Object]]):
         if not member:
             member = ctx.author
         elif isinstance(member, discord.Object):
