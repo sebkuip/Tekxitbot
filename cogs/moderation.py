@@ -7,7 +7,7 @@ import typing
 
 from config import *
 
-#banned user converter. From R.Danny by Danny (Raptz). https://github.com/Rapptz/RoboDanny
+#banned user converter. From R.Danny by Danny (Raptzz). https://github.com/Rapptz/RoboDanny
 class BannedMember(commands.Converter):
     async def convert(self, ctx, argument):
         if argument.isdigit():
