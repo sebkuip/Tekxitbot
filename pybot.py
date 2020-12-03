@@ -11,8 +11,7 @@ from config import *
 
 intents = discord.Intents().all()
 activity = discord.Activity(type=discord.ActivityType.listening, name=f"your commands beginning with {PREFIX}")
-bot = commands.Bot(command_prefix=PREFIX, case_insensitive=True, intents=intents, activity=activity)
-bot.remove_command('help')
+bot = commands.Bot(command_prefix=PREFIX, case_insensitive=True, intents=intents, help_command=None, activity=activity)
 
 logger = logging.getLogger('latest')
 logger.setLevel(logging.INFO)
