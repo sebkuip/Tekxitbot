@@ -33,6 +33,9 @@ class Moderation(commands.Cog):
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *, reason=None):
         await ctx.message.delete()
+        if member.top_role > ctx.author.top_role:
+            await ctx.send("You cannot kick this person")
+            return
         embed = discord.Embed(title=f'You have been kicked from {ctx.guild.name}', color=discord.Color.green())
         if reason:
             embed.add_field(name='Reason:', value=f'{reason}', inline=False)
@@ -68,6 +71,9 @@ class Moderation(commands.Cog):
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member: typing.Union[discord.Member, discord.User], *, reason=None):
         await ctx.message.delete()
+        if member.top_role > ctx.author.top_role:
+            await ctx.send("You cannot ban this person")
+            return
         embed = discord.Embed(title=f'You have been banned from {ctx.guild.name}', color=discord.Color.green())
         if reason:
             embed.add_field(name='Reason:', value=f'{reason}', inline=False)
@@ -101,6 +107,9 @@ class Moderation(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def tempban(self, ctx, member: discord.User, time, *, reason=None):
         await ctx.message.delete()
+        if member.top_role > ctx.author.top_role:
+            await ctx.send("You cannot ban this person")
+            return
         weeks = int((re.findall(r"(\d+)w", time) or "0")[0])
         days = int((re.findall(r"(\d+)d", time) or "0")[0])
         hours = int((re.findall(r"(\d+)h", time) or "0")[0])
