@@ -69,11 +69,16 @@ class Moderation(commands.Cog):
 
     @commands.command(help='Bans the specified member for the specified reason')
     @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx, member: typing.Union[discord.Member, discord.User], *, reason=None):
+    async def ban(self, ctx, member: typing.Union[discord.Member, discord.User, discord.Object], *, reason=None):
         await ctx.message.delete()
-        if member.top_role > ctx.author.top_role:
-            await ctx.send("You cannot ban this person")
-            return
+
+        if isinstance(member, discord.Member):
+            if member.top_role > ctx.author.top_role:
+                await ctx.send("You cannot ban this person")
+                return
+        else:
+            member = member if isinstance(member, discord.User) else await self.bot.get_user(member.id)
+
         embed = discord.Embed(title=f'You have been banned from {ctx.guild.name}', color=discord.Color.green())
         if reason:
             embed.add_field(name='Reason:', value=f'{reason}', inline=False)
