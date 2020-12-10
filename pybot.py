@@ -58,6 +58,29 @@ async def on_message(message):
         except FileNotFoundError or OSError:
             await bot.process_commands(message)
 
+@bot.command()
+@commands.has_permissions(administrator=True)
+async def load(ctx, extension):
+    await ctx.send(f'loading cog {extension}')
+    try:
+        bot.load_extension(f'cogs.{extension}')
+    except Exception as e:
+        await ctx.send(f"Failed to load extension {extension}.")
+        print(f"Failed to load extension {extension}.")
+        print(e)
+    await ctx.send(f'loaded cog {extension}')
+
+@bot.command()
+@commands.has_permissions(administrator=True)
+async def unload(ctx, extension):
+    await ctx.send(f'unloading cog {extension}')
+    try:
+        bot.load_extension(f'cogs.{extension}')
+    except Exception as e:
+        await ctx.send(f"Failed to load extension {extension}.")
+        print(f"Failed to load extension {extension}.")
+        print(e)
+    await ctx.send(f'unloaded cog {extension}')
 
 @bot.command(help='Reload a cog')
 @commands.has_permissions(administrator=True)
@@ -68,7 +91,7 @@ async def reload(ctx, name):
     try:
         bot.load_extension(f'cogs.{name}')
         await ctx.send(f'reloaded cog {name}')
-    except Exception as error:
+    except Exception as e:
         print(f"Failed to load extension {extension}.")
         print(error)
 
