@@ -213,7 +213,7 @@ class Moderation(commands.Cog):
 
     @commands.command(help='Mutes the person', aliases=['stfu'])
     @commands.has_permissions(manage_messages=True)
-    async def mute(self, ctx, member: discord.Member, * reason=None):
+    async def mute(self, ctx, member: discord.Member, *, reason=None):
         await ctx.message.delete()
 
         muterole = ctx.guild.get_role(606922464861356033)
@@ -243,7 +243,7 @@ class Moderation(commands.Cog):
 
     @commands.command(help='Unmutes the person', aliases=['unstfu'])
     @commands.has_permissions(manage_messages=True)
-    async def unmute(self, ctx, member: discord.Member, * reason=None):
+    async def unmute(self, ctx, member: discord.Member, *, reason=None):
         await ctx.message.delete()
 
         muterole = ctx.guild.get_role(606922464861356033)
