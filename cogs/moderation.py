@@ -211,6 +211,63 @@ class Moderation(commands.Cog):
         await ctx.send(embed=embed)
         await self.bot.logchannel.send(embed=embed)
 
+    @commands.command(help='Mutes the person', aliases=['stfu'])
+    @commands.has_permissions(manage_messages=True)
+    async def mute(self, ctx, member: discord.Member, * reason=None):
+        await ctx.message.delete()
+
+        muterole = ctx.guild.get_role(606922464861356033)
+
+        await member.add_roles(muterole)
+
+        embed = discord.Embed(title=f'You have been muted in {ctx.guild.name}', color=discord.Color.green())
+        if reason:
+            embed.add_field(name='Reason:', value=f'{reason}', inline=False)
+        embed.add_field(name='\u200b', value=f'If you have questions about this action, or would like '
+                                             f'to appeal it. Please contact the staff team. '
+                                             f'You were muted by {ctx.author.mention}', inline=False)
+        try:
+            await member.send(embed=embed)
+        except discord.Forbidden:
+            await ctx.send('Could not send DM to user')
+        
+        embed = discord.Embed(color=discord.Color.green())
+        embed.set_footer(text=f'Action performed by {ctx.author}')
+        embed.set_author(name=f'Mute | {member}')
+
+        if reason:
+            embed.add_field(name=f'Reason', value=f'{reason}', inline=False)
+        
+        await ctx.send(embed=embed)
+        await self.bot.logchannel.send(embed=embed)
+
+    @commands.command(help='Unmutes the person', aliases=['unstfu'])
+    @commands.has_permissions(manage_messages=True)
+    async def unmute(self, ctx, member: discord.Member, * reason=None):
+        await ctx.message.delete()
+
+        muterole = ctx.guild.get_role(606922464861356033)
+
+        await member.remove_roles(muterole)
+
+        embed = discord.Embed(title=f'You have been unmuted in {ctx.guild.name}', color=discord.Color.green())
+        if reason:
+            embed.add_field(name='Reason:', value=f'{reason}', inline=False)
+        try:
+            await member.send(embed=embed)
+        except discord.Forbidden:
+            await ctx.send('Could not send DM to user')
+        
+        embed = discord.Embed(color=discord.Color.green())
+        embed.set_footer(text=f'Action performed by {ctx.author}')
+        embed.set_author(name=f'Unmute | {member}')
+
+        if reason:
+            embed.add_field(name=f'Reason', value=f'{reason}', inline=False)
+        
+        await ctx.send(embed=embed)
+        await self.bot.logchannel.send(embed=embed)
+ 
     @commands.command(help='View all infractions for a user')
     @commands.has_permissions(manage_messages=True)
     async def infractions(self, ctx, member: discord.Member):
