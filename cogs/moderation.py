@@ -33,7 +33,7 @@ class Moderation(commands.Cog):
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *, reason=None):
         await ctx.message.delete()
-        if member.top_role > ctx.author.top_role:
+        if member.top_role >= ctx.author.top_role:
             await ctx.send("You cannot kick this person")
             return
         embed = discord.Embed(title=f'You have been kicked from {ctx.guild.name}', color=discord.Color.green())
@@ -73,7 +73,7 @@ class Moderation(commands.Cog):
         await ctx.message.delete()
 
         if isinstance(member, discord.Member):
-            if member.top_role > ctx.author.top_role:
+            if member.top_role >= ctx.author.top_role:
                 await ctx.send("You cannot ban this person")
                 return
         else:
@@ -112,7 +112,7 @@ class Moderation(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def tempban(self, ctx, member: discord.User, time, *, reason=None):
         await ctx.message.delete()
-        if member.top_role > ctx.author.top_role:
+        if member.top_role >= ctx.author.top_role:
             await ctx.send("You cannot ban this person")
             return
         weeks = int((re.findall(r"(\d+)w", time) or "0")[0])
@@ -182,8 +182,14 @@ class Moderation(commands.Cog):
 
     @commands.command(help='Warns the user for the specified reason')
     @commands.has_permissions(manage_messages=True)
-    async def warn(self, ctx, member: discord.User, *, reason=None):
+    async def warn(self, ctx, member: typing.Union[discord.Member, discord.User], *, reason=None):
         await ctx.message.delete()
+
+        if isinstance(member, discord.Member):
+            if member.top_role >= ctx.author.top_role:
+                await ctx.send("You cannot warn this person")
+                return
+        
         embed = discord.Embed(title=f'You have been warned in {ctx.guild.name}', color=discord.Color.green())
         if reason:
             embed.add_field(name='Reason:', value=f'{reason}', inline=False)
@@ -215,6 +221,9 @@ class Moderation(commands.Cog):
     @commands.has_permissions(manage_messages=True)
     async def mute(self, ctx, member: discord.Member, *, reason=None):
         await ctx.message.delete()
+        if member.top_role >= ctx.author.top_role:
+            await ctx.send("You cannot mute this person")
+            return
 
         muterole = ctx.guild.get_role(606922464861356033)
 
