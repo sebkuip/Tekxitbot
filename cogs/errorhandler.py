@@ -17,7 +17,10 @@ class ErrorHandler(commands.Cog):
                               color=discord.Color.red())
         embed.set_thumbnail(url='https://i.imgur.com/R7ib9Fu.png')
 
-        if isinstance(error, commands.NotOwner):
+        if isinstance(error, FileNotFoundError):
+            pass
+
+        elif isinstance(error, commands.NotOwner):
             embed.add_field(name=f'**NotOwner**',
                             value=f'Looks like you are not the owner of the bot and cannot use this command. '
                                   f'Developers only >:(')
