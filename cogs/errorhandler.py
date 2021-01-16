@@ -12,6 +12,8 @@ class ErrorHandler(commands.Cog):
         if hasattr(ctx.command, 'on_error'):
             return
 
+        error = getattr(error, 'original', error)
+
         embed = discord.Embed(title=f'```***AN ERROR OCCURED***```',
                               description=f'Uh oh, something went wrong. The following error appeared:',
                               color=discord.Color.red())
