@@ -202,7 +202,7 @@ class Moderation(commands.Cog):
             await ctx.send('Could not send DM to user')
         try:
             result = await self.bot.con.fetchrow("INSERT INTO warnings(uid, executor, timedate, reason) VALUES($1, "
-                                       "$2, CURRENT_TIMESTAMP(1), $3) RETURNING warnid", member.id, str(ctx.author.id), reason)
+                                       "$2, CURRENT_TIMESTAMP(1), $3) RETURNING warnid", member.id, ctx.author.id, reason)
             warnid = result[0]
         except Exception as error:
             print(error)
