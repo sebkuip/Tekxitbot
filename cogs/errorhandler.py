@@ -20,8 +20,7 @@ class ErrorHandler(commands.Cog):
         embed.set_thumbnail(url='https://i.imgur.com/R7ib9Fu.png')
 
         if isinstance(error, FileNotFoundError):
-            pass
-
+            return
         elif isinstance(error, commands.NotOwner):
             embed.add_field(name=f'**NotOwner**',
                             value=f'Looks like you are not the owner of the bot and cannot use this command. '
@@ -45,7 +44,7 @@ class ErrorHandler(commands.Cog):
             embed.add_field(name=f'**BotMissingPermissions**',
                             value=f'Looks like the bot is missing permissions to execute this command.')
         elif isinstance(error, discord.Forbidden):
-            pass
+            return
         # elif isinstance(error, discord.ext.commands.errors.CommandInvokeError):
         # embed.add_field(name=f'**CommandInvokeError**',
         # value=f'Looks like something is wrong with the command. This could be because the page '

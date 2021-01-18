@@ -39,9 +39,9 @@ class Moderation(commands.Cog):
         embed = discord.Embed(title=f'You have been kicked from {ctx.guild.name}', color=discord.Color.green())
         if reason:
             embed.add_field(name='Reason:', value=f'{reason}', inline=False)
-        embed.add_field(name='If you have questions:', value=f'If you have questions about this action, or would like '
-                                                             f'to appeal it. Please contact the staff team. '
-                                                             f'You were kicked by {ctx.author.mention}', inline=False)
+        embed.add_field(name='\u200b', value=f'If you have questions about this action, or would like '
+                                             f'to appeal it. Please contact the staff team. '
+                                             f'You were warned by {ctx.author.mention}', inline=False)
         try:
             await member.send(embed=embed)
         except discord.Forbidden:
@@ -77,14 +77,14 @@ class Moderation(commands.Cog):
                 await ctx.send("You cannot ban this person")
                 return
         else:
-            member = member if isinstance(member, discord.User) else await self.bot.get_user(member.id)
+            member = member if isinstance(member, discord.User) else await self.bot.fetch_user(member.id)
 
         embed = discord.Embed(title=f'You have been banned from {ctx.guild.name}', color=discord.Color.green())
         if reason:
             embed.add_field(name='Reason:', value=f'{reason}', inline=False)
-        embed.add_field(name='If you have questions:', value=f'If you have questions about this action, or would like '
-                                                             f'to appeal it. Please contact the staff team. '
-                                                             f'You were banned by {ctx.author.mention}', inline=False)
+        embed.add_field(name='\u200b', value=f'If you have questions about this action, or would like '
+                                             f'to appeal it. Please contact the staff team. '
+                                             f'You were warned by {ctx.author.mention}', inline=False)
         try:
             await member.send(embed=embed)
         except discord.Forbidden:
@@ -185,10 +185,9 @@ class Moderation(commands.Cog):
     async def warn(self, ctx, member: typing.Union[discord.Member, discord.User], *, reason=None):
         await ctx.message.delete()
 
-        if isinstance(member, discord.Member):
-            if member.top_role >= ctx.author.top_role:
-                await ctx.send("You cannot warn this person")
-                return
+        if isinstance(member, discord.Member) and member.top_role >= ctx.author.top_role:
+            await ctx.send("You cannot warn this person")
+            return
         
         embed = discord.Embed(title=f'You have been warned in {ctx.guild.name}', color=discord.Color.green())
         if reason:
@@ -372,7 +371,7 @@ class Moderation(commands.Cog):
         try:
             await self.bot.con.execute("DELETE FROM warnings WHERE warnid = $1", warnid)
             await ctx.send(f'Successfully deleted warn with ID: {warnid}')
-        except:
+        except Exception:
             await ctx.send(f'Could not find warn with ID: {warnid}')
 
     @commands.command(help='Delete a kick')
@@ -382,7 +381,7 @@ class Moderation(commands.Cog):
         try:
             await self.bot.con.execute("DELETE FROM kicks WHERE kickid = $1", kickid)
             await ctx.send(f'Successfully deleted kick with ID: {kickid}')
-        except:
+        except Exception:
             await ctx.send(f'Could not find kick with ID: {kickid}')
 
     @commands.command(help='Delete a ban')
@@ -392,7 +391,7 @@ class Moderation(commands.Cog):
         try:
             await self.bot.con.execute("DELETE FROM bans WHERE kickid = $1", banid)
             await ctx.send(f'Successfully deleted ban with ID: {banid}')
-        except:
+        except Exception:
             await ctx.send(f'Could not find ban with ID: {banid}')
 
 
@@ -410,7 +409,7 @@ class Moderation(commands.Cog):
             embed.add_field(name='ID: ' + str(case[0]),
                             value=f'When: {datetime} UTC\nExecutor: {invoker}\nReason: {case[4]}', inline=False)
             await ctx.send(embed=embed)
-        except:
+        except Exception:
             await ctx.send(f'Could not find warn with ID: {warnid}')
 
     @commands.command(help='Check out a kick case')
@@ -427,7 +426,7 @@ class Moderation(commands.Cog):
             embed.add_field(name='ID: ' + str(case[0]),
                             value=f'When: {datetime} UTC\nExecutor: {invoker}\nReason: {case[4]}', inline=False)
             await ctx.send(embed=embed)
-        except:
+        except Exception:
             await ctx.send(f'Could not find kick with ID: {kickid}')
 
     @commands.command(help='Check out a ban case')
@@ -446,7 +445,7 @@ class Moderation(commands.Cog):
             embed.add_field(name='ID: ' + str(case[0]),
                             value=f'When: {datetime} UTC\nExecutor: {invoker}\nReason: {case[6]}\nTemporary: {case[4]}\nend: {enddatetime}',
                             inline=False)
-        except:
+        except Exception:
             await ctx.send(f'Could not find ban with ID: {banid}')
 
 
