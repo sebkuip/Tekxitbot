@@ -54,8 +54,8 @@ async def on_message(message):
             with open(f'cogs/chelp/{command}.txt', 'r') as f:
                 command = f.read()
             await message.channel.send(f'{command}')
-            await message.delete()
-        except FileNotFoundError or OSError:
+            # await message.delete()
+        except (FileNotFoundError, OSError):
             await bot.process_commands(message)
 
 @bot.command()
