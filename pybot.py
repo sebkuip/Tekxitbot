@@ -6,6 +6,7 @@ import os
 import discord
 import asyncpg
 from discord.ext import commands
+from random import randint
 
 from config import *
 
