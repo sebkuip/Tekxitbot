@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 
+from config import *
+
 
 class ErrorHandler(commands.Cog):
     def __init__(self, bot):
@@ -31,8 +33,10 @@ class ErrorHandler(commands.Cog):
                                   f'channel or user does not exist?\nIf this was an infraction, please manually add '
                                   f'the infraction to the database.')
         elif isinstance(error, commands.MissingRequiredArgument):
-            embed.add_field(name=f'**MissingRequiredArgument**',
-                            value=f'Looks like you forgot to enter an argument for this command.')
+            # embed.add_field(name=f'**MissingRequiredArgument**',
+                            # value=f'Looks like you forgot to enter an argument for this command.')
+            await ctx.send(f"Command usage: `{PREFIX}{ctx.command.name} {ctx.command.signature}")
+            return
         elif isinstance(error, commands.CommandNotFound):
             embed.add_field(name=f'**CommandNotFound**',
                             value=f'Looks like you entered a wrong command. Make sure the command exists and you '
