@@ -94,7 +94,8 @@ async def reload(ctx, name):
         await ctx.send(f'reloaded cog {name}')
     except Exception as e:
         print(f"Failed to load extension {extension}.")
-        print(error)
+        print(e)
+        await ctx.send(e)
 
 if __name__ == '__main__':
     for extension in os.listdir('./cogs'):

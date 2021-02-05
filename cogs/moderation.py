@@ -117,13 +117,17 @@ class Moderation(commands.Cog):
 
         await self.bot.logchannel.send(embed=embed)
 
-    @commands.command(help='Bans the specified member for the specified reason for a specified time (DO NOT USE, WIP)')
+    @commands.command(help='Bans the specified member for the specified reason for a specified time')
     @commands.has_permissions(administrator=True)
-    async def tempban(self, ctx, member: discord.User, time, *, reason=None):
+    async def tempban(self, ctx, member: typing.Union[discord.Member, discord.User], time, *, reason=None):
         await ctx.message.delete()
-        if member.top_role >= ctx.author.top_role:
-            await ctx.send("You cannot ban this person")
-            return
+        try:
+            if member.top_role >= ctx.author.top_role:
+                await ctx.send("You cannot ban this person")
+                return
+        except Exception:
+            pass
+
         weeks = int((re.findall(r"(\d+)w", time) or "0")[0])
         days = int((re.findall(r"(\d+)d", time) or "0")[0])
         hours = int((re.findall(r"(\d+)h", time) or "0")[0])
@@ -135,7 +139,7 @@ class Moderation(commands.Cog):
             hours=hours,
             minutes=minutes
         )
-        endtime = datetime.datetime.now() + timedelta
+        endtime = datetime.datetime.utcnow() + timedelta
 
         embed = discord.Embed(title=f'You have been temporary banned from {ctx.guild.name}. You have been banned until {endtime}.',
                               color=discord.Color.green())
@@ -169,27 +173,27 @@ class Moderation(commands.Cog):
 
     @commands.command(help='Unbans the specified member for the specified reason')
     @commands.has_permissions(ban_members=True)
-    async def unban(self, ctx, member: BannedMember, *, reason=None):
+    async def unban(self, ctx, entry: BannedMember, *, reason=None):
         await ctx.message.delete()
         embed = discord.Embed(
             title=f'You have been unbanned from {ctx.guild.name}', color=discord.Color.green())
         if reason:
             embed.add_field(name='Reason:', value=f'{reason}', inline=False)
         try:
-            await member.send(embed=embed)
+            await entry[1].send(embed=embed)
         except discord.Forbidden:
             await ctx.send('Could not send DM to user')
 
         embed = discord.Embed(title=f' ', description=f' ',
                               color=discord.Color.green())
         embed.set_footer(text=f'Action performed by {ctx.author}')
-        embed.set_author(name=f'Unban | {member}')
+        embed.set_author(name=f'Unban | {entry[1]}')
         if reason:
             embed.add_field(name=f'Reason', value=f'{reason}', inline=False)
 
         await ctx.send(embed=embed)
         await self.bot.logchannel.send(embed=embed)
-        await ctx.guild.unban(member, reason=reason)
+        await ctx.guild.unban(entry[1], reason=reason)
 
     @commands.command(help='Warns the user for the specified reason')
     @commands.has_permissions(manage_messages=True)
@@ -407,10 +411,20 @@ class Moderation(commands.Cog):
     async def delban(self, ctx, banid: int):
         await ctx.message.delete()
         try:
-            await self.bot.con.execute("DELETE FROM bans WHERE kickid = $1", banid)
+            await self.bot.con.execute("DELETE FROM bans WHERE banid = $1", banid)
             await ctx.send(f'Successfully deleted ban with ID: {banid}')
         except Exception:
             await ctx.send(f'Could not find ban with ID: {banid}')
+
+    @commands.command(help='Delete a temporary ban')
+    @commands.has_permissions(manage_messages=True)
+    async def deltempban(self, ctx, banid: int):
+        await ctx.message.delete()
+        try:
+            await self.bot.con.execute("DELETE FROM tempbans WHERE banid = $1", banid)
+            await ctx.send(f'Successfully deleted temporary ban with ID: {banid}')
+        except Exception:
+            await ctx.send(f'Could not find temporary ban with ID: {banid}')
 
     @commands.command(help='Check out a warning case')
     @commands.has_permissions(manage_messages=True)
@@ -458,10 +472,27 @@ class Moderation(commands.Cog):
             embed.set_author(name=str(member), icon_url=member.avatar_url)
             invoker = await self.bot.fetch_user(case[2])
             datetime = str(case[3])[0:-7]
-            if case[4]:
-                enddatetime = str(case[5])
             embed.add_field(name='ID: ' + str(case[0]),
-                            value=f'When: {datetime} UTC\nExecutor: {invoker}\nReason: {case[6]}\nTemporary: {case[4]}\nend: {enddatetime}',
+                            value=f'When: {datetime} UTC\nExecutor: {invoker}\nReason: {case[4]}',
+                            inline=False)
+        except Exception:
+            await ctx.send(f'Could not find ban with ID: {banid}')
+
+    @commands.command(help='Check out a temporary ban case')
+    @commands.has_permissions(manage_messages=True)
+    async def tempbancase(self, ctx, banid: int):
+        await ctx.message.delete()
+        try:
+            case = self.bot.con.fetchrow(
+                "SELECT * FROM tempbans WHERE banid = %s", banid)
+            embed = discord.Embed(color=0xb277dd)
+            member = await self.bot.fetch_user(case[1])
+            embed.set_author(name=str(member), icon_url=member.avatar_url)
+            invoker = await self.bot.fetch_user(case[2])
+            datetime = str(case[3])[0:-7]
+            enddatetime = str(case[4])[0:-7]
+            embed.add_field(name='ID: ' + str(case[0]),
+                            value=f'When: {datetime} UTC\nExecutor: {invoker}\nReason: {case[6]}\nEnd: {enddatetime}\n',
                             inline=False)
         except Exception:
             await ctx.send(f'Could not find ban with ID: {banid}')
