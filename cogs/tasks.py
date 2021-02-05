@@ -2,45 +2,45 @@ import discord
 from discord.ext import commands, tasks
 import datetime
 import asyncpg
+import asyncio
 
-
-# banned user converter. From R.Danny by Danny (Raptzz). https://github.com/Rapptz/RoboDanny
-class BannedMember(commands.Converter):
-    async def convert(self, ctx, argument):
-        if argument.isdigit():
-            member_id = int(argument, base=10)
-            try:
-                return await ctx.guild.fetch_ban(discord.Object(id=member_id))
-            except discord.NotFound:
-                raise commands.BadArgument(
-                    'This member has not been banned before.') from None
-
-        ban_list = await ctx.guild.bans()
-        entity = discord.utils.find(
-            lambda u: str(u.user) == argument, ban_list)
-
-        if entity is None:
-            raise commands.BadArgument(
-                'This member has not been banned before.')
-        return entity
+from config import *
 
 
 class Tasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot  # This is the bot instance, it lets us interact with most things
 
+        self.unbanloop.start()
+
     @tasks.loop(minutes=1)
     async def unbanloop(self):
-        result = await self.bot.con.fetchrow("SELECT(timedate) FROM tracker")
-        results = await self.bot.con.fetchall("SELECT(uid) FROM tempbans WHERE endtime < now() AND endtime > $1", result)
+        self.guild = await self.bot.fetch_guild(GUILDID)
+        time = await self.bot.con.fetchrow("SELECT(timedate) FROM tracker")
+        results = await self.bot.con.fetch("SELECT(banid, uid, endtime) FROM tempbans WHERE endtime < $1 AND endtime > $2", datetime.datetime.utcnow(), time[0])
+
         for result in results:
-            pass
+            try:
+                entry = await self.guild.fetch_ban(discord.Object(id=result[0][1]))
+                user = entry[1]
+                await self.guild.unban(user, reason="Temporary ban expired")
+
+                embed = discord.Embed(color=discord.Color.green())
+                embed.set_footer(
+                    text=f'Action performed by bot | Case {result[0][0]}')
+                embed.set_author(name=f'Case {result[0][0]} | Unban | {user}')
+                embed.add_field(name=f'Reason', value='Temporary ban expired', inline=False)
+                await self.bot.logchannel.send(embed=embed)
+            except Exception as e:
+                print(f"Could not unban {result}", e)
+
+        await self.bot.con.execute("UPDATE tracker SET timedate = $1", datetime.datetime.utcnow())
 
     @unbanloop.before_loop
     async def before_unbanloop(self):
         await self.bot.wait_until_ready()
-
-    unbanloop.start()
+        await asyncio.sleep(2)
+    
 
 
 def setup(bot):
