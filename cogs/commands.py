@@ -30,7 +30,7 @@ class Commands(commands.Cog):
             channel = ctx.channel
         embed = discord.Embed()
         embed.set_author(name=str(ctx.author), icon_url=ctx.author.avatar_url)
-        embed.add_field(name=f'**Said**', value=text)
+        embed.add_field(name=f'\u200b', value=text)
         await channel.send(embed=embed)
         await ctx.message.delete()
 
