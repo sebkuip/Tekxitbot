@@ -35,7 +35,7 @@ class ErrorHandler(commands.Cog):
         elif isinstance(error, commands.MissingRequiredArgument):
             # embed.add_field(name=f'**MissingRequiredArgument**',
                             # value=f'Looks like you forgot to enter an argument for this command.')
-            await ctx.send(f"Command usage: `{PREFIX}{ctx.command.name} {ctx.command.signature}")
+            await ctx.send(f"Command usage: `{PREFIX}{ctx.command.name} {ctx.command.signature}`")
             return
         elif isinstance(error, commands.CommandNotFound):
             embed.add_field(name=f'**CommandNotFound**',
