@@ -38,9 +38,8 @@ class ErrorHandler(commands.Cog):
             await ctx.send(f"Command usage: `{PREFIX}{ctx.command.name} {ctx.command.signature}`")
             return
         elif isinstance(error, commands.CommandNotFound):
-            embed.add_field(name=f'**CommandNotFound**',
-                            value=f'Looks like you entered a wrong command. Make sure the command exists and you '
-                                  f'typed it correctly.')
+            embed.add_field(name=f'CommandNotFound',
+                            value=f"```Command '{ctx.command}' Not found```")
         elif isinstance(error, commands.MissingPermissions):
             embed.add_field(name=f'**MissingPermissions**',
                             value=f'Looks like you do not have the permission to execute the command.')
