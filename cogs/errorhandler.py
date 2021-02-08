@@ -39,7 +39,7 @@ class ErrorHandler(commands.Cog):
             return
         elif isinstance(error, commands.CommandNotFound):
             embed.add_field(name=f'CommandNotFound',
-                            value=f"```Command '{ctx.command}' Not found```")
+                            value=f"```{error}```")
         elif isinstance(error, commands.MissingPermissions):
             embed.add_field(name=f'**MissingPermissions**',
                             value=f'Looks like you do not have the permission to execute the command.')
