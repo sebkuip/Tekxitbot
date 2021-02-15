@@ -20,6 +20,10 @@ class Pinboard(commands.Cog):
         if payload.emoji == self.pinemoji:
 
             message = await pincheckchannel.fetch_message(payload.message_id)
+            if not message.channel.id == PINCHECKCHANNEL:
+                return
+            else:
+                await message.add_reaction(self.pinemoji)
 
             reactions = message.reactions
 
