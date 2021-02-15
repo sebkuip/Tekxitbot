@@ -7,6 +7,7 @@ class Pinboard(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.pinemoji = None
+        self.lastmessage = 0
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
@@ -29,12 +30,14 @@ class Pinboard(commands.Cog):
             reactions = message.reactions
 
             for reaction in reactions:
-                if (reaction.emoji == self.pinemoji and reaction.count > 1) or reaction.emoji == '✅':
+                if (reaction.emoji == self.pinemoji and reaction.count > 1) or reaction.emoji == '✅' or self.lastmessage == payload.message_id:
                     return
 
             embed = discord.Embed(description=message.jump_url)
             embed.add_field(name=message.author.name, value=message.content)
             await pinchannel.send(embed=embed)
+
+            self.lastmessage = payload.message_id
         
 
 def setup(bot):
