@@ -24,15 +24,13 @@ class Pinboard(commands.Cog):
                 return
             else:
                 await message.add_reaction(self.pinemoji)
+                await message.add_reaction('✅')
 
             reactions = message.reactions
 
             for reaction in reactions:
-                if reaction.emoji == self.pinemoji:
-                    counter = reaction.count
-
-            if counter > 1:
-                return
+                if (reaction.emoji == self.pinemoji and reaction.count > 1) or reaction.emoji == '✅':
+                    return
 
             embed = discord.Embed(description=message.jump_url)
             embed.add_field(name=message.author.name, value=message.content)
