@@ -8,31 +8,31 @@ class Pinboard(commands.Cog):
         self.bot = bot
         self.pinemoji = None
 
-    @commands.Cog.listener
+    @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        guild = await self.bot.get_guild(payload.guild_id)
-        pinchannel = await guild.get_channel(PINCHANNEL)
-        pincheckchannel = await guild.get_channel(PINCHECKCHANNEL)
+        guild = self.bot.get_guild(payload.guild_id)
+        pinchannel = guild.get_channel(PINCHANNEL)
+        pincheckchannel = guild.get_channel(PINCHECKCHANNEL)
 
         if not self.pinemoji:
-            await guild.fetch_emoji(PINEMOJI)
+            self.pinemoji = await guild.fetch_emoji(PINEMOJI)
 
-        message = await pincheckchannel.fetch_message(payload.message_id)
+        if payload.emoji == self.pinemoji:
 
-        reactions = message.reactions
+            message = await pincheckchannel.fetch_message(payload.message_id)
 
-        counter = 0
+            reactions = message.reactions
 
-        for reaction in reactions:
-            if reaction.emoji == self.pinemoji:
-                counter+=1
+            for reaction in reactions:
+                if reaction.emoji == self.pinemoji:
+                    counter = reaction.count
 
-        if counter < 3:
-            return
+            if counter > 1:
+                return
 
-        embed = discord.Embed(description=message.content)
-        embed.set_author(name=payload.member.name, icon_url=payload.member.avatar_url)
-        await pinchannel.send(embed=embed)
+            embed = discord.Embed(description=message.jump_url)
+            embed.add_field(name=message.author.name, value=message.content)
+            await pinchannel.send(embed=embed)
         
 
 def setup(bot):
