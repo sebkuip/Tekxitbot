@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+import datetime
 
 from config import *
 
@@ -33,8 +34,10 @@ class Pinboard(commands.Cog):
                 if (reaction.emoji == self.pinemoji and reaction.count > 1) or reaction.emoji == '✅' or self.lastmessage == payload.message_id:
                     return
 
-            embed = discord.Embed(description=message.jump_url)
-            embed.add_field(name=message.author.name, value=message.content)
+            embed = discord.Embed(description=message.content)
+            embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
+            embed.set_footer(text=f"Sent at: {message.created_at.strftime('%a %Y-%m-%d %H:%M')}")
+            embed.add_field(name="Link:", value=message.jump_url)
             await pinchannel.send(embed=embed)
 
             self.lastmessage = payload.message_id
