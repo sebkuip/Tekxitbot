@@ -11,13 +11,17 @@ from random import randint
 from config import *
 
 intents = discord.Intents.all()
-activity = discord.Activity(type=discord.ActivityType.listening, name=f"your commands beginning with {PREFIX}")
-bot = commands.Bot(command_prefix=PREFIX, case_insensitive=True, intents=intents, help_command=None, activity=activity)
+activity = discord.Activity(
+    type=discord.ActivityType.listening, name=f"your commands beginning with {PREFIX}")
+bot = commands.Bot(command_prefix=PREFIX, case_insensitive=True,
+                   intents=intents, help_command=None, activity=activity)
 
 logger = logging.getLogger('latest')
 logger.setLevel(logging.INFO)
-handler = logging.FileHandler(filename='latest.log', encoding='utf-8', mode='w')
-handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+handler = logging.FileHandler(
+    filename='latest.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter(
+    '%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
 
@@ -34,7 +38,7 @@ async def on_ready():
     print('Connecting to database')
     try:
         bot.con = await asyncpg.connect(host=HOST, port=PORT, database=DATABASE, user=USER,
-                                password=PASSWORD)
+                                        password=PASSWORD)
         result = await bot.con.fetchrow('SELECT version()')
         db_version = result[0]
         print(f'Database version: {db_version}')
@@ -59,6 +63,7 @@ async def on_message(message):
         except (FileNotFoundError, OSError):
             await bot.process_commands(message)
 
+
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def load(ctx, extension):
@@ -72,6 +77,7 @@ async def load(ctx, extension):
         print(f"Failed to load extension {extension}.")
         print(e)
 
+
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def unload(ctx, extension):
@@ -84,6 +90,7 @@ async def unload(ctx, extension):
         await ctx.send(e)
         print(f"Failed to unload extension {extension}.")
         print(e)
+
 
 @bot.command(help='Reload a cog')
 @commands.has_permissions(administrator=True)
