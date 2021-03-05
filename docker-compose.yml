@@ -3,6 +3,8 @@ version: "3.4"
 services:
   tekxitbot:
     image: tekxitbot
+    volumes:
+      - tekxitbot:/home/tekxitbot/cogs/chelp"
     build:
       context: .
       dockerfile: ./Dockerfile
