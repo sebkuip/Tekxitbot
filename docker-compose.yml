@@ -4,7 +4,7 @@ services:
   tekxitbot:
     image: tekxitbot
     volumes:
-      - tekxitbot:/home/tekxitbot/cogs/chelp"
+      - chelp
     build:
       context: .
       dockerfile: ./Dockerfile
