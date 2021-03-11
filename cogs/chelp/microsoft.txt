@@ -1,11 +1,12 @@
+**Side note**, Tekxit Pi is on CurseForge now: https://www.curseforge.com/minecraft/modpacks/tekxit-pi-e
 **Tekxit Bot FAQ** <:faq:787489505761427516>
 <:info:787489505757364267> `How to play Tekxit with a Microsoft Account`
-> 1. Get the **Vanilla Launcher**
-> 2. Run **1.12.2 Vanilla**
-> 3. Get the client files from https://tekx.it/ for the pack you want to play. **Once downloaded unzip these**
-> 4. Download the latest stable release of **Forge 1.12.2**
-> 5. Start the **Vanilla Launcher with Forge** once
-> 6. Drag and drop **ALL** files from the client file you downloaded into **%appdata% > .minecraft**
-> 7. Start your game through the **Vanilla Launcher**
-> 8. Enjoy
+> 1. Get the **Vanilla Launcher**.
+> 2. Run **1.12.2 Vanilla**.
+> 3. Get the client files from https://tekx.it/ for the pack you want to play. **Once downloaded, unzip these**.
+> 4. Download the latest stable release of **Forge 1.12.2**.
+> 5. Start the Vanilla Launcher with **Forge** once.
+> 6. Drag and drop **ALL** files from the client files you downloaded into **%appdata% > .minecraft**.
+> 7. Start your game through the **Vanilla Launcher**.
+> 8. Enjoy!
 <:important1:787752813630980126> **Does this not work?  Ask Staff for further support.**

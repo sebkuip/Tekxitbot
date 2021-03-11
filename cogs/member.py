@@ -10,6 +10,7 @@ class Members(commands.Cog):
         asyncio.run(setup(self))
 
     async def setup(self):
+        await self.bot.wait_until_ready()
         self.joinchannel = await self.bot.fetch_channel(JOINCHANNEL)
 
     @commands.Cog.listener()
