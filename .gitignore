@@ -4,3 +4,4 @@ config.py
 *.iml
 *.pyc
 *.json
+backup.bak

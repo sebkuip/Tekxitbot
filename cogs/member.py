@@ -1,4 +1,5 @@
 from discord.ext import commands
+import asyncio
 
 from config import *
 
@@ -6,7 +7,10 @@ from config import *
 class Members(commands.Cog):
     def __init__(self, bot):
         self.bot = bot  # This is the bot instance, it lets us interact with most things
-        self.joinchannel = self.bot.get_channel(JOINCHANNEL)
+        asyncio.run(setup(self))
+
+    async def setup(self):
+        self.joinchannel = await self.bot.fetch_channel(JOINCHANNEL)
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
