@@ -7,11 +7,7 @@ from config import *
 class Members(commands.Cog):
     def __init__(self, bot):
         self.bot = bot  # This is the bot instance, it lets us interact with most things
-        asyncio.run(self.setup())
-
-    async def setup(self):
-        await self.bot.wait_until_ready()
-        self.joinchannel = await self.bot.fetch_channel(JOINCHANNEL)
+        self.joinchannel = None
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -21,6 +17,9 @@ class Members(commands.Cog):
             role = member.guild.get_role(roleid)
             roles.append(role)
         await member.add_roles(*roles)
+
+        if not self.joinchannel:
+            self.joinchannel = await self.bot.fetch_channel(JOINCHANNEL)
         
         # Join message
         await self.joinchannel.send(f'> <:R3:721722986339631234><:R2:721722986159407115><:R4:721722986356539472>**__New '
