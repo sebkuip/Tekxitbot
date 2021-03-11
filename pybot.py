@@ -72,7 +72,7 @@ async def load(ctx, extension):
         bot.load_extension(f'cogs.{extension}')
         await ctx.send(f'loaded cog {extension}')
     except Exception as e:
-        await ctx.send(f"Failed to load extension {extension}.")
+        await ctx.send(f"Failed to load extension {extension}. {e}")
         await ctx.send(e)
         print(f"Failed to load extension {extension}.")
         print(e)
@@ -86,7 +86,7 @@ async def unload(ctx, extension):
         bot.unload_extension(f'cogs.{extension}')
         await ctx.send(f'unloaded cog {extension}')
     except Exception as e:
-        await ctx.send(f"Failed to unload extension {extension}.")
+        await ctx.send(f"Failed to unload extension {extension}. {e}")
         await ctx.send(e)
         print(f"Failed to unload extension {extension}.")
         print(e)

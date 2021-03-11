@@ -7,7 +7,7 @@ from config import *
 class Members(commands.Cog):
     def __init__(self, bot):
         self.bot = bot  # This is the bot instance, it lets us interact with most things
-        asyncio.run(setup(self))
+        asyncio.run(self.setup())
 
     async def setup(self):
         await self.bot.wait_until_ready()
