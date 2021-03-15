@@ -45,7 +45,8 @@ class Pinboard(commands.Cog):
             embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
             embed.set_footer(text=f"Sent at: {message.created_at.strftime('%a %Y-%m-%d %H:%M')}")
             embed.add_field(name="Link:", value=f"[jump]({message.jump_url})")
-            await pinchannel.send(embed=embed, files=attach)
+            await pinchannel.send(embed=embed)
+            await pinchannel.send(files=attach)
 
             self.lastmessage = payload.message_id
         
