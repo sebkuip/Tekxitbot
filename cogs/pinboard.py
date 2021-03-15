@@ -37,8 +37,8 @@ class Pinboard(commands.Cog):
             if len(message.attachments) > 0:
                 attach = []
                 for attachment in message.attachments:
-                    abytes = await attachment.read()
-                    attach.append(discord.File(abytes))
+                    afile = await attachment.to_file()
+                    attach.append(afile)
                     
 
             embed = discord.Embed(description=message.content)
