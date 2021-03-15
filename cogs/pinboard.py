@@ -34,11 +34,18 @@ class Pinboard(commands.Cog):
                 if (reaction.emoji == self.pinemoji and reaction.count > 1) or reaction.emoji == '✅' or self.lastmessage == payload.message_id:
                     return
 
+            if len(message.attachments) > 0:
+                attach = []
+                for attachment in message.attachments:
+                    abytes = await attachment.read()
+                    attach.append(discord.File(abytes))
+                    
+
             embed = discord.Embed(description=message.content)
             embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
             embed.set_footer(text=f"Sent at: {message.created_at.strftime('%a %Y-%m-%d %H:%M')}")
             embed.add_field(name="Link:", value=f"[jump]({message.jump_url})")
-            await pinchannel.send(embed=embed)
+            await pinchannel.send(embed=embed, files=attach)
 
             self.lastmessage = payload.message_id
         
