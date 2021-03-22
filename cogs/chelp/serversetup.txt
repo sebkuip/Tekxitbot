@@ -1,14 +1,14 @@
->>> :exclamation: **To set up a Tekxit server follow these steps**
-~~**--------------------------------------**~~
- The setup of a tekxit server is almost the same as a vanilla server
-1. Download the **server files from the technic page (https://tekx.it)**
-2. **Extract the files** to a convenient place. Your desktop is often a good place
-3. **Read the readme.txt** for any important info you ***WILL*** need
-4. **Open the server.properties file** with a text editor.
-5. **Change the "server-IP= " to "server-IP=0.0.0.0"**
-6. Go to your modem settings and **open the port 25565 (TCP + UDP) with port forwarding**
-7. Make a **firewall exception for the tekxit server**
-8. Start the server with **"Start server.bat"**
- ***MAKE A FREQUENT BACKUP IN CASE THINGS GO WRONG*** || ᴾˡᵉᵃˢᵉ ᵈᵒ, ᴵ ᵇᵉᵍ ʸᵒᵘ ||
-~~**--------------------------------------**~~
-:exclamation: **You join by putting "localhost" into the server address. Others join with "Public-IP:port".  Your public IP can be found on https://www.whatismyip.com/ and the port is what you did in step 6.**
+> ❗ **To set up a Tekxit server follow these steps**
+> ~~**--------------------------------------**~~
+>  The setup of a tekxit server is almost the same as a vanilla server
+> 1. Download the **server files from the technic page (https://tekx.it)**
+> 2. **Extract the files** to a convenient place. Your desktop is often a good place
+> 3. **Read the readme.txt** for any important info you ***WILL*** need
+> 4. **Open the server.properties file** with a text editor.
+> 5. **Change the "server-IP= " to "server-IP=0.0.0.0"**
+> 6. Go to your modem settings and **open the port 25565 (TCP + UDP) with port forwarding**
+> 7. Make a **firewall exception for the tekxit server**
+> 8. Start the server with **"Start server.bat"**
+>  ***MAKE A FREQUENT BACKUP IN CASE THINGS GO WRONG*** || ᴾˡᵉᵃˢᵉ ᵈᵒ, ᴵ ᵇᵉᵍ ʸᵒᵘ ||
+> ~~**--------------------------------------**~~
+> ❗ **You join by putting "localhost" into the server address. Others join with "Public-IP:port".  Your public IP can be found on https://tekx.it/help.php under the section "What is my IP" and the port is what you did in step 6.**

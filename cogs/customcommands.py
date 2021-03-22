@@ -38,6 +38,17 @@ class CustomCommands(commands.Cog):
         if str(name + '.txt') not in os.listdir('./cogs/chelp'):
             await ctx.send(f"Command {name} doesn't exists")
             return
+        
+        await ctx.send(f"Please retype {name} to confirm")
+
+        def check(m):
+            return ctx.channel == m.channel and ctx.author == m.author and m.content == name
+        try:
+            await self.bot.wait_for('message', check=check, timeout=10)
+        except TimeoutError:
+            await ctx.send("Did not confirm in time. Aborting")
+            return
+
         with open(f'cogs/chelp/{name}.txt', 'w') as f:
             f.write(text)
         await ctx.send(f'Edited custom command {name}\n\n{text}')
@@ -49,6 +60,7 @@ class CustomCommands(commands.Cog):
         if str(name + '.txt') not in os.listdir('./cogs/chelp'):
             await ctx.send(f"Command {name} doesn't exists")
             return
+        
         await ctx.send(f"Please retype {name} to confirm")
 
         def check(m):
