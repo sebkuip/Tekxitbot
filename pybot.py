@@ -53,6 +53,8 @@ async def on_ready():
 # chelp
 @bot.event
 async def on_message(message):
+    if message.author.bot:
+        return
     if message.content.startswith(PREFIX):
         try:
             command = message.content.strip(PREFIX).lower()
