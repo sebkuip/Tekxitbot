@@ -19,7 +19,8 @@ class Members(commands.Cog):
         await member.add_roles(*roles)
 
         if not self.joinchannel:
-            self.joinchannel = await self.bot.fetch_channel(JOINCHANNEL)
+            self.guild = self.bot.get_guild(GUILDID)
+            self.joinchannel = self.guild.get_channel(JOINCHANNEL)
         
         # Join message
         await self.joinchannel.send(f'> <:R3:721722986339631234><:R2:721722986159407115><:R4:721722986356539472>**__New '
