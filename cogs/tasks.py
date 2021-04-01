@@ -12,10 +12,13 @@ class Tasks(commands.Cog):
         self.bot = bot  # This is the bot instance, it lets us interact with most things
 
         self.unbanloop.start()
+        self.statstracker.start()
+        self.guild = None
 
     @tasks.loop(minutes=1)
     async def unbanloop(self):
-        self.guild = await self.bot.fetch_guild(GUILDID)
+        if not self.guild:
+            self.guild = self.bot.get_guild(GUILDID)
         time = await self.bot.con.fetchrow("SELECT(timedate) FROM tracker")
         results = await self.bot.con.fetch("SELECT(banid, uid, endtime) FROM tempbans WHERE endtime < $1 AND endtime > $2", datetime.datetime.utcnow(), time[0])
 
@@ -41,6 +44,18 @@ class Tasks(commands.Cog):
         await self.bot.wait_until_ready()
         await asyncio.sleep(2)
     
+    @tasks.loop(minutes=15)
+    async def statstracker(self):
+        if not self.guild:
+            self.guild = self.bot.get_guild(GUILDID)
+        
+        members = self.guild.member_count
+        await self.bot.con.execute("INSERT INTO stats VALUES($1, $2)", datetime.datetime.utcnow(), members)
+    
+    @statstracker.before_loop
+    async def before_statstracker(self):
+        await self.bot.wait_until_ready()
+        await asyncio.sleep(1)
 
 
 def setup(bot):
