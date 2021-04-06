@@ -1,7 +1,7 @@
->>> :exclamation: If you want to run Tekxit 3 you will need the latest version of **Java**!
+>>> ❗ If you want to run Tekxit 3 you will need the latest version of **Java**!
 ~~**--------------------------------------**~~
-1. Uninstall **all java versions** (on windows this is done from control center>apps and programs>right click>uninstall)
+1. Uninstall **all java versions** (on windows this is done from control panel>apps and programs>right click>uninstall)
 2. Install **64 Bit Java** from https://www.java.com/en/download/manual.jsp 
 Make sure you have the right one. You **NEED** to get the 64-bit variant. (http://prntscr.com/oq40wc)
 3. Restart your **PC**
-:heart: Still not working? Ask **Staff** for further support!
+❤️ Still not working? Ask **Staff** for further support!

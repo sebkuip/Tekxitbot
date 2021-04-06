@@ -32,18 +32,20 @@ async def on_ready():
     print(f'ID is {bot.user.id}')
     print(f'Keep this window open to keep the bot running.')
 
+    #database
+    print('Connecting to database')
+    await get_db()
+
     bot.logchannel = await bot.fetch_channel(425632491622105088)
 
-    # database
-    print('Connecting to database')
-    try:
-        bot.con = await asyncpg.connect(host=HOST, port=PORT, database=DATABASE, user=USER,
-                                        password=PASSWORD)
-        result = await bot.con.fetchrow('SELECT version()')
+async def get_db():
+    bot.pool = await asyncpg.create_pool(host=HOST, port=PORT, database=DATABASE, user=USER, password=PASSWORD)
+
+    async with bot.pool.acquire() as con:
+        result = await con.fetchrow('SELECT version()')
         db_version = result[0]
         print(f'Database version: {db_version}')
-    except Exception as error:
-        print(error)
+
 
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -52,12 +52,13 @@ class Moderation(commands.Cog):
         except discord.Forbidden:
             await ctx.send('Could not send DM to user')
         await member.kick(reason=reason)
-        try:
-            result = await self.bot.con.fetchrow("INSERT INTO kicks(uid, executor, timedate, reason) VALUES($1, $2, "
-                                                 "CURRENT_TIMESTAMP(1), $3) RETURNING kickid", member.id, ctx.author.id, reason)
-            kickid = result[0]
-        except Exception as error:
-            print(error)
+        async with self.bot.pool.acquire() as con:
+            try:
+                result = await con.fetchrow("INSERT INTO kicks(uid, executor, timedate, reason) VALUES($1, $2, "
+                                                    "CURRENT_TIMESTAMP(1), $3) RETURNING kickid", member.id, ctx.author.id, reason)
+                kickid = result[0]
+            except Exception as error:
+                print(error)
         if reason:
             embed = discord.Embed(title=f' ', description=f' ',
                                   color=discord.Color.green())
@@ -98,12 +99,13 @@ class Moderation(commands.Cog):
         except discord.Forbidden:
             await ctx.send('Could not send DM to user')
         await ctx.guild.ban(member, reason=reason, delete_message_days=0)
-        try:
-            result = await self.bot.con.fetchrow("INSERT INTO bans(uid, executor, timedate, reason) VALUES($1, $2, "
-                                                 "CURRENT_TIMESTAMP(1), $3) RETURNING banid", member.id, ctx.author.id, reason)
-            banid = result[0]
-        except Exception as error:
-            print(error)
+        async with self.bot.pool.acquire() as con:
+            try:
+                result = con.fetchrow("INSERT INTO bans(uid, executor, timedate, reason) VALUES($1, $2, "
+                                                    "CURRENT_TIMESTAMP(1), $3) RETURNING banid", member.id, ctx.author.id, reason)
+                banid = result[0]
+            except Exception as error:
+                print(error)
 
         embed = discord.Embed(title=f' ', description=f' ',
                               color=discord.Color.green())
@@ -119,14 +121,14 @@ class Moderation(commands.Cog):
 
     @commands.command(help='Bans the specified member for the specified reason for a specified time')
     @commands.has_permissions(administrator=True)
-    async def tempban(self, ctx, member: typing.Union[discord.Member, discord.User], time, *, reason=None):
+    async def tempban(self, ctx, member: typing.Union[discord.Member, discord.User, discord.Object], time, *, reason=None):
         await ctx.message.delete()
-        try:
+        if isinstance(member, discord.Member):
             if member.top_role >= ctx.author.top_role:
                 await ctx.send("You cannot ban this person")
                 return
-        except Exception:
-            pass
+        else:
+            member = member if isinstance(member, discord.User) else await self.bot.fetch_user(member.id)
 
         weeks = int((re.findall(r"(\d+)w", time) or "0")[0])
         days = int((re.findall(r"(\d+)d", time) or "0")[0])
@@ -153,12 +155,13 @@ class Moderation(commands.Cog):
         except discord.Forbidden:
             await ctx.send('Could not send DM to user')
         await ctx.guild.ban(member, reason=reason, delete_message_days=1)
-        try:
-            result = await self.bot.con.fetchrow("INSERT INTO tempbans(uid, executor, timedate, endtime, reason) VALUES($1, $2, "
-                                                 "CURRENT_TIMESTAMP(1), $3, $4) RETURNING banid", member.id, ctx.author.id, endtime, reason)
-            banid = result[0]
-        except Exception as error:
-            print(error)
+        async with self.bot.pool.acquire() as con:
+            try:
+                result = await con.fetchrow("INSERT INTO tempbans(uid, executor, timedate, endtime, reason) VALUES($1, $2, "
+                                                    "CURRENT_TIMESTAMP(1), $3, $4) RETURNING banid", member.id, ctx.author.id, endtime, reason)
+                banid = result[0]
+            except Exception as error:
+                print(error)
 
         embed = discord.Embed(title=f' ', description=f' ',
                               color=discord.Color.green())
@@ -197,12 +200,15 @@ class Moderation(commands.Cog):
 
     @commands.command(help='Warns the user for the specified reason')
     @commands.has_permissions(manage_messages=True)
-    async def warn(self, ctx, member: typing.Union[discord.Member, discord.User], *, reason=None):
+    async def warn(self, ctx, member: typing.Union[discord.Member, discord.User, discord.Object], *, reason=None):
         await ctx.message.delete()
 
-        if isinstance(member, discord.Member) and member.top_role >= ctx.author.top_role:
-            await ctx.send("You cannot warn this person")
-            return
+        if isinstance(member, discord.Member):
+            if member.top_role >= ctx.author.top_role:
+                await ctx.send("You cannot warn this person")
+                return
+        else:
+            member = member if isinstance(member, discord.User) else await self.bot.fetch_user(member.id)
 
         embed = discord.Embed(
             title=f'You have been warned in {ctx.guild.name}', color=discord.Color.green())
@@ -215,12 +221,13 @@ class Moderation(commands.Cog):
             await member.send(embed=embed)
         except discord.Forbidden:
             await ctx.send('Could not send DM to user')
-        try:
-            result = await self.bot.con.fetchrow("INSERT INTO warnings(uid, executor, timedate, reason) VALUES($1, "
-                                                 "$2, CURRENT_TIMESTAMP(1), $3) RETURNING warnid", member.id, ctx.author.id, reason)
-            warnid = result[0]
-        except Exception as error:
-            print(error)
+        async with self.bot.pool.acquire() as con:
+            try:
+                result = await con.fetchrow("INSERT INTO warnings(uid, executor, timedate, reason) VALUES($1, "
+                                                    "$2, CURRENT_TIMESTAMP(1), $3) RETURNING warnid", member.id, ctx.author.id, reason)
+                warnid = result[0]
+            except Exception as error:
+                print(error)
 
         embed = discord.Embed(color=discord.Color.green())
         embed.set_footer(
@@ -297,13 +304,16 @@ class Moderation(commands.Cog):
 
     @commands.command(help='View all infractions for a user')
     @commands.has_permissions(manage_messages=True)
-    async def infractions(self, ctx, member: discord.Member):
+    async def infractions(self, ctx, member: typing.Union[discord.Member, discord.User, discord.Object]):
+        if not isinstance(member, discord.Member):
+            member = member if isinstance(member, discord.User) else await self.bot.fetch_user(member.id)
         await ctx.message.delete()
         try:
-            warns = await self.bot.con.fetch("SELECT * FROM warnings WHERE uid = $1", member.id)
-            kicks = await self.bot.con.fetch("SELECT * FROM kicks WHERE uid = $1", member.id)
-            bans = await self.bot.con.fetch("SELECT * FROM bans WHERE uid = $1", member.id)
-            tempbans = await self.bot.con.fetch("SELECT * FROM bans WHERE uid = $1", member.id)
+            async with self.bot.pool.acquire() as con:
+                warns = await con.fetch("SELECT * FROM warnings WHERE uid = $1", member.id)
+                kicks = await con.fetch("SELECT * FROM kicks WHERE uid = $1", member.id)
+                bans = await con.fetch("SELECT * FROM bans WHERE uid = $1", member.id)
+                tempbans = await con.fetch("SELECT * FROM bans WHERE uid = $1", member.id)
 
             embeds = [[], [], [], []]
             for i in range(0, len(warns)//25+1):
@@ -390,48 +400,53 @@ class Moderation(commands.Cog):
     @commands.has_permissions(manage_messages=True)
     async def delwarn(self, ctx, warnid: int):
         await ctx.message.delete()
-        try:
-            await self.bot.con.execute("DELETE FROM warnings WHERE warnid = $1", warnid)
-            await ctx.send(f'Successfully deleted warn with ID: {warnid}')
-        except Exception:
-            await ctx.send(f'Could not find warn with ID: {warnid}')
+        async with self.bot.pool.acquire() as con:
+            try:
+                await con.execute("DELETE FROM warnings WHERE warnid = $1", warnid)
+                await ctx.send(f'Successfully deleted warn with ID: {warnid}')
+            except Exception:
+                await ctx.send(f'Could not find warn with ID: {warnid}')
 
     @commands.command(help='Delete a kick')
     @commands.has_permissions(manage_messages=True)
     async def delkick(self, ctx, kickid: int):
         await ctx.message.delete()
-        try:
-            await self.bot.con.execute("DELETE FROM kicks WHERE kickid = $1", kickid)
-            await ctx.send(f'Successfully deleted kick with ID: {kickid}')
-        except Exception:
-            await ctx.send(f'Could not find kick with ID: {kickid}')
+        async with self.bot.pool.acquire() as con:
+            try:
+                await con.execute("DELETE FROM kicks WHERE kickid = $1", kickid)
+                await ctx.send(f'Successfully deleted kick with ID: {kickid}')
+            except Exception:
+                await ctx.send(f'Could not find kick with ID: {kickid}')
 
     @commands.command(help='Delete a ban')
     @commands.has_permissions(manage_messages=True)
     async def delban(self, ctx, banid: int):
         await ctx.message.delete()
-        try:
-            await self.bot.con.execute("DELETE FROM bans WHERE banid = $1", banid)
-            await ctx.send(f'Successfully deleted ban with ID: {banid}')
-        except Exception:
-            await ctx.send(f'Could not find ban with ID: {banid}')
+        async with self.bot.pool.acquire() as con:
+            try:
+                await con.execute("DELETE FROM bans WHERE banid = $1", banid)
+                await ctx.send(f'Successfully deleted ban with ID: {banid}')
+            except Exception:
+                await ctx.send(f'Could not find ban with ID: {banid}')
 
     @commands.command(help='Delete a temporary ban')
     @commands.has_permissions(manage_messages=True)
     async def deltempban(self, ctx, banid: int):
         await ctx.message.delete()
-        try:
-            await self.bot.con.execute("DELETE FROM tempbans WHERE banid = $1", banid)
-            await ctx.send(f'Successfully deleted temporary ban with ID: {banid}')
-        except Exception:
-            await ctx.send(f'Could not find temporary ban with ID: {banid}')
+        async with self.bot.pool.acquire() as con:
+            try:
+                await con.execute("DELETE FROM tempbans WHERE banid = $1", banid)
+                await ctx.send(f'Successfully deleted temporary ban with ID: {banid}')
+            except Exception:
+                await ctx.send(f'Could not find temporary ban with ID: {banid}')
 
     @commands.command(help='Check out a warning case')
     @commands.has_permissions(manage_messages=True)
     async def warncase(self, ctx, warnid: int):
         await ctx.message.delete()
         try:
-            case = await self.bot.con.fetchrow("SELECT * FROM warnings WHERE warnid = $1", warnid)
+            async with self.bot.pool.acquire() as con:
+                case = await con.fetchrow("SELECT * FROM warnings WHERE warnid = $1", warnid)
             embed = discord.Embed(color=0xb277dd)
             member = await self.bot.fetch_user(case[1])
             embed.set_author(name=str(member), icon_url=member.avatar_url)
@@ -448,7 +463,8 @@ class Moderation(commands.Cog):
     async def kickcase(self, ctx, kickid: int):
         await ctx.message.delete()
         try:
-            case = await self.bot.con.fetchrow("SELECT * FROM kicks WHERE kickid = $1", kickid)
+            async with self.bot.pool.acquire() as con:
+                case = await con.fetchrow("SELECT * FROM kicks WHERE kickid = $1", kickid)
             embed = discord.Embed(color=0xb277dd)
             member = await self.bot.fetch_user(case[1])
             embed.set_author(name=str(member), icon_url=member.avatar_url)
@@ -465,8 +481,8 @@ class Moderation(commands.Cog):
     async def bancase(self, ctx, banid: int):
         await ctx.message.delete()
         try:
-            case = self.bot.con.fetchrow(
-                "SELECT * FROM bans WHERE banid = %s", banid)
+            async with self.bot.pool.acquire() as con:
+                case = con.fetchrow("SELECT * FROM bans WHERE banid = %s", banid)
             embed = discord.Embed(color=0xb277dd)
             member = await self.bot.fetch_user(case[1])
             embed.set_author(name=str(member), icon_url=member.avatar_url)
@@ -483,8 +499,8 @@ class Moderation(commands.Cog):
     async def tempbancase(self, ctx, banid: int):
         await ctx.message.delete()
         try:
-            case = self.bot.con.fetchrow(
-                "SELECT * FROM tempbans WHERE banid = %s", banid)
+            async with self.bot.pool.acquire() as con:
+                case = con.fetchrow("SELECT * FROM tempbans WHERE banid = %s", banid)
             embed = discord.Embed(color=0xb277dd)
             member = await self.bot.fetch_user(case[1])
             embed.set_author(name=str(member), icon_url=member.avatar_url)
