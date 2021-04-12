@@ -71,6 +71,7 @@ class Tasks(commands.Cog):
     async def update_stats(self):
         async with self.bot.pool.acquire() as con:
             await con.execute("INSERT INTO stats VALUES($1, $2, $3)", datetime.datetime.utcnow(), self.members, self.messages)
+            self.messages = 0
     
     @update_stats.before_loop
     async def before_update_stats(self):
