@@ -33,6 +33,22 @@ class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot  # This is the bot instance, it lets us interact with most things
 
+    # Anti character spam
+    @commands.Cog.listener()
+    async def on_message(self, m):
+        if m.author.permissions_in(m.channel).manage_messages:
+            return
+        content = re.sub(r"[a-zA-Z_0-9]",r"", m.content)
+        for letter in set(content):
+            if content.count(letter) > SPAMTRESHOLD:
+                await m.delete()
+
+                embed = discord.Embed(color=0xFF0000)
+                embed.set_author(name=str(m.author), icon_url=m.author.avatar_url)
+                embed.add_field(name="Text", value=discord.utils.escape_markdown(m.content))
+                embed.set_footer(text=f"Deleted at {datetime.datetime.utcnow().strftime('%a %b %d %H:%M:%S %Z')}")
+                await self.bot.logchannel.send(f"Found spam in <#{m.channel.id}> by <@{m.author.id}>:", embed=embed)
+
     @commands.command(help='Kicks the specified member for the specified reason')
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *, reason=None):
