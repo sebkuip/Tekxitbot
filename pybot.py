@@ -36,6 +36,9 @@ async def on_ready():
     print('Connecting to database')
     await get_db()
 
+    #extensions
+    await load_extensions()
+
     bot.logchannel = await bot.fetch_channel(425632491622105088)
 
 async def get_db():
@@ -45,6 +48,28 @@ async def get_db():
         result = await con.fetchrow('SELECT version()')
         db_version = result[0]
         print(f'Database version: {db_version}')
+
+async def load_extensions():
+    if __name__ == '__main__':
+        
+        status = {}
+        for extension in os.listdir('./cogs'):
+            if extension.endswith(".py"):
+                status[extension] = "x"
+        errors = []
+
+        for extension in status:
+            if extension.endswith('.py'):
+                try:
+                    bot.load_extension(f'cogs.{extension[:-3]}')
+                    status[extension] = "L"
+                except Exception as e:
+                    errors.append(e)
+        
+        maxlen = max(len(str(extension)) for extension in status)
+        for extension in status:
+            print(f" {extension.ljust(maxlen)} | {status[extension]}")
+        print(errors) if errors else print("no errors during loading")
 
 
 
@@ -106,17 +131,8 @@ async def reload(ctx, name):
         bot.load_extension(f'cogs.{name}')
         await ctx.send(f'reloaded cog {name}')
     except Exception as e:
-        print(f"Failed to load extension {extension}.")
+        print(f"Failed to load extension {name}.")
         print(e)
         await ctx.send(e)
-
-if __name__ == '__main__':
-    for extension in os.listdir('./cogs'):
-        if extension.endswith('.py'):
-            try:
-                bot.load_extension(f'cogs.{extension[:-3]}')
-            except Exception as e:
-                print(f"Failed to load extension {extension}.")
-                print(e)
 
 bot.run(TOKEN)

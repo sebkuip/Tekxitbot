@@ -1,4 +1,8 @@
->>> :exclamation: **Here is the Full List of Mods in Tekxit 3**
+>>> ❗ **Here is the Full List of Mods in Tekxit 3 (LE and Pi)**
 ~~**--------------------------------------**~~
-**The Link**
+**Pi**
+https://tekx.it/tekxit314
+On the bottom left there is a mod list button.
+
+**LE**
 https://tekxit.fandom.com/wiki/Tekxit_Wiki

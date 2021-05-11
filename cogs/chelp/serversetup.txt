@@ -11,4 +11,4 @@
 > 8. Start the server with **"Start server.bat"**
 >  ***MAKE A FREQUENT BACKUP IN CASE THINGS GO WRONG*** || ᴾˡᵉᵃˢᵉ ᵈᵒ, ᴵ ᵇᵉᵍ ʸᵒᵘ ||
 > ~~**--------------------------------------**~~
-> ❗ **You join by putting "localhost" into the server address. Others join with "Public-IP:port".  Your public IP can be found on https://tekx.it/help.php under the section "What is my IP" and the port is what you did in step 6.**
+> ❗ **You join by putting "localhost" into the server address. Others join with "Public-IP:port".  Your public IP can be found on https://tekx.it/help/ under the section "What is my IP" and the port is what you did in step 6.**

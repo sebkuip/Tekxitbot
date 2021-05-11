@@ -36,6 +36,8 @@ class Moderation(commands.Cog):
     # Anti character spam
     @commands.Cog.listener()
     async def on_message(self, m):
+        if not m.guild or m.author == m.guild.me:
+            return
         if m.author.permissions_in(m.channel).manage_messages:
             return
         content = re.sub(r"[a-zA-Z_0-9]",r"", m.content)

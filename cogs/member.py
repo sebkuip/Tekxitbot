@@ -1,6 +1,4 @@
 from discord.ext import commands
-import asyncio
-
 from config import *
 
 
@@ -10,6 +8,9 @@ class Members(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
+        # add to levels db
+        async with self.bot.pool.acquire() as con:
+            await con.execute("INSERT INTO levels(uid, xp, level, message_count) VALUES($1, $2, $3, $4)", member.id, 0, 0, 0)
         # add a few roles to the member on joining
         roles = []
         for roleid in JOINROLES:
