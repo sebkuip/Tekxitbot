@@ -22,8 +22,7 @@ class Commands(commands.Cog):
         await channel.send(text)
         await ctx.message.delete()
 
-    @commands.command(
-        help='Allows you to send an embed using the bot in the specified channel or current if none is specified')
+    @commands.command(help='Allows you to send an embed using the bot in the specified channel or current if none is specified')
     @commands.has_permissions(manage_messages=True)
     async def embed(self, ctx, channel: typing.Optional[discord.TextChannel] = None, *, text):
         if channel is None:
