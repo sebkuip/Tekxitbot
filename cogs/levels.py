@@ -95,14 +95,17 @@ class Members(commands.Cog):
         await ctx.send(f"Sucessfully set data for <@{data['uid']}> to xp = {xp}, level = {level}, message_count = {message_count}")
 
     @commands.command(help="shows the top 10 for chat xp", aliases=["lb"])
-    async def leaderboard(self, ctx):
+    async def leaderboard(self, ctx, page=1):
+        page = 1 if page<1 else page
+        offset = (page-1)*10
+
         async with self.bot.pool.acquire() as con:
-            data = await con.fetch("SELECT * FROM levels ORDER BY xp DESC LIMIT 10")
+            data = await con.fetch("SELECT * FROM levels ORDER BY xp DESC LIMIT 10 OFFSET $1", offset)
         
-        embed = discord.Embed(title="Leaderboard", color=discord.Color.blurple())
+        embed = discord.Embed(title="Leaderboard", description=f"page {page}", color=discord.Color.blurple())
         for i, entry in enumerate(data):
             user = self.bot.get_user(entry['uid']) or await self.bot.fetch_user(entry['uid'])
-            embed.add_field(name=str(user), value=f"Rank: {i+1}\nLevel: {entry['level']}\nTotal XP: {entry['xp']}", inline=False)
+            embed.add_field(name=str(user), value=f"Rank: {i+1+(page-1)*10}\nLevel: {entry['level']}\nTotal XP: {entry['xp']}", inline=False)
 
         await ctx.send(embed=embed)
 
