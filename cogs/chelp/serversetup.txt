@@ -6,7 +6,7 @@
 > 3. **Read the readme.txt** for any important info you ***WILL*** need
 > 4. **Open the server.properties file** with a text editor.
 > 5. **Change the "server-IP= " to "server-IP=0.0.0.0"**
-> 6. Go to your modem settings and **open the port 25565 (TCP + UDP) with port forwarding**
+> 6. Go to your modem settings and **open the port 25565 (LE) or port 31415 (Pi) for both TCP AND UDP with port forwarding**
 > 7. Make a **firewall exception for the tekxit server**
 > 8. Start the server with **"Start server.bat"**
 >  ***MAKE A FREQUENT BACKUP IN CASE THINGS GO WRONG*** || ᴾˡᵉᵃˢᵉ ᵈᵒ, ᴵ ᵇᵉᵍ ʸᵒᵘ ||
