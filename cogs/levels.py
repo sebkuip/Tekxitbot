@@ -1,5 +1,6 @@
 from logging import currentframe
 import discord
+from discord.errors import HTTPException
 from discord.ext import commands, tasks
 import random
 import asyncio
@@ -45,6 +46,27 @@ class Members(commands.Cog):
         if xp >= xp_needed:
             level = data["level"] + 1
             await m.channel.send(f"GG <@{m.author.id}>, you just advanced to **level {level}**!")
+            
+            async with self.bot.pool.acquire() as con:
+                guild = self.bot.get_guild(GUILDID) or await self.bot.fetch_guild(GUILDID)
+                removeroles_id = await con.fetch("SELECT roleid FROM levelroles")
+                removeroles_id = [role_id[0] for role_id in removeroles_id]
+                removeroles = [guild.get_role(role_id) for role_id in removeroles_id]
+                for rrole in removeroles:
+                    if rrole in m.author.roles:
+                        try:
+                            await m.author.remove_roles(rrole, reason="removed old rank role")
+                        except HTTPException:
+                            continue
+
+                addroles_id = await con.fetch("SELECT roleid FROM levelroles WHERE level = $1", level)
+                addroles_id = [role_id[0] for role_id in addroles_id]
+                addroles = [guild.get_role(role_id) for role_id in addroles_id]
+                for arole in addroles:
+                    try:
+                        await m.author.add_roles(arole, reason="Add new rank role")
+                    except HTTPException:
+                        continue
         else:
             level = data["level"]
                 
@@ -108,6 +130,36 @@ class Members(commands.Cog):
             embed.add_field(name=str(user), value=f"Rank: {i+1+(page-1)*10}\nLevel: {entry['level']}\nTotal XP: {entry['xp']}", inline=False)
 
         await ctx.send(embed=embed)
+
+    @commands.has_permissions(administrator=True)
+    @commands.command(help="Add a role to the rewards list")
+    async def addrolereward(self, ctx, role: discord.Role, level: int):
+        if level <= 0:
+            await ctx.send("That is not a valid level")
+            return
+        async with ctx.typing():
+            async with self.bot.pool.acquire() as con:
+                try:
+                    await con.execute("INSERT INTO levelroles(roleid, level) VALUES($1, $2)", role.id, level)
+                except:
+                    await ctx.send("Failed to add role, check if data is valid")
+                    return
+                await ctx.send(f"Sucesfully added {role.name} ({role.id}) as a reward to level {level}")
+
+    @commands.has_permissions(administrator=True)    
+    @commands.command(help="Remove a role from the rewards list")
+    async def removerolereward(self, ctx, role: discord.Role, level: int):
+        if level <= 0:
+            await ctx.send("That is not a valid level")
+            return
+        async with ctx.typing():
+            async with self.bot.pool.acquire() as con:
+                try:
+                    await con.execute("DELETE FROM levelroles WHERE roleid = $1 AND level = $2", role.id, level)
+                except:
+                    await ctx.send("Failed to remove role, check if data is valid")
+                    return
+                await ctx.send(f"Sucesfully removed {role.name} ({role.id}) as a reward to level {level}")
 
 
 def setup(bot):
