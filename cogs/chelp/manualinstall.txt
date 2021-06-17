@@ -1,13 +1,13 @@
->>> :exclamation: When Tekxit 3 doesn't work try the manual install steps below!
-~~**--------------------------------------**~~
-**Manual Install | Fix install Error**
-1. Download https://www.tekx.it/downloads/0.990Tekxit3.zip
-2. **Rename** the file (zip) you downloaded to 'tekxit-3-official-1122-0.990.zip'
-3. Go to **%Appdata%**
-4. Open **.technic**
-5. Open **Modpacks**
-6. Open **tekxit-3-official-1122**
-7. Open **cache**
-8. Copy the **.zip file** from **Step 2. into this folder**
-9. Open the **Technic Launcher** > Click **Modpacks** > Select **Tekxit 3 (Offical) 1.12.2** in the sidebar > Click **Modpack Options** > Click **Reinstall Pack**
-:heart: Still having problems? Ask **Staff** for further support!
+> ❗ When Tekxit 3 doesn't work try the manual install steps below!
+> ~~**--------------------------------------**~~
+> **Manual Install | Fix install Error**
+> 1. Download https://www.tekx.it/downloads/0.13.2TekxitPi.zip (Pi) or https://www.tekx.it/downloads/0.990Tekxit3.zip (LE)
+> 2. **Rename** the file (zip) you downloaded to `tekxit-314-official-1122-0.13.2.zip` (Pi) or `tekxit-3-official-1122-0.990.zip` (LE)
+> 3. Go to **%Appdata%**
+> 4. Open **.technic**
+> 5. Open **Modpacks**
+> 6. Open **tekxit-314-official-1122/tekxit-3-official-1122**
+> 7. Open **cache**
+> 8. Copy the **.zip file** from **Step 2. into this folder**
+> 9. Open the **Technic Launcher** > Click **Modpacks** > Select **Tekxit 3.14 Pi (beta) 1.12.2/Tekxit 3 (Offical) 1.12.2** in the sidebar > Click **Modpack Options** > Click **Reinstall Pack**
+> ❤️ Still having problems? Ask **Staff** for further support!

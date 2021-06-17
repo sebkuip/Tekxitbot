@@ -36,11 +36,11 @@ class Moderation(commands.Cog):
     # Anti character spam
     @commands.Cog.listener()
     async def on_message(self, m):
-        if not m.guild or m.author == m.guild.me:
+        if not m.guild or m.author.bot or isinstance(m.author, discord.User):
             return
         if m.author.permissions_in(m.channel).manage_messages:
             return
-        content = re.sub(r"[a-zA-Z_0-9]",r"", m.content)
+        content = re.sub(r"[a-zA-Z_0-9\s]",r"", m.content)
         for letter in set(content):
             if content.count(letter) > SPAMTRESHOLD:
                 await m.delete()

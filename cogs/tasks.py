@@ -1,8 +1,11 @@
 import discord
+from discord import Webhook, AsyncWebhookAdapter
 from discord.ext import commands, tasks
 import datetime
 import asyncpg
 import asyncio
+import aiohttp
+from discord.webhook import WebhookAdapter
 
 from config import *
 
@@ -16,8 +19,7 @@ class Tasks(commands.Cog):
         self.messages = 0
 
         self.unbanloop.start()
-        self.get_members.start()
-        self.update_stats.start()
+        self.redditlog.start()
 
     @tasks.loop(minutes=1)
     async def unbanloop(self):
@@ -47,36 +49,39 @@ class Tasks(commands.Cog):
     async def before_unbanloop(self):
         await self.bot.wait_until_ready()
         await asyncio.sleep(2)
-    
+
     @tasks.loop(minutes=1)
-    async def get_members(self):
-        if not self.guild:
-            self.guild = self.bot.get_guild(GUILDID)
-        
-        self.members = self.guild.member_count
-    
-    @get_members.before_loop
-    async def before_get_members(self):
-        await self.bot.wait_until_ready()
-        await asyncio.sleep(1)
+    async def redditlog(self):
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://www.reddit.com/r/tekxit.json?sort=new") as resp:
+                if resp.status == 200:
+                    json = await resp.json()
+                    posts = json['data']['children']
+                    if not posts:
+                        print(json)
+                        print(posts)
+                    posts = list(map(lambda p: p['data'], posts))
+                    posts.reverse()
 
-    @commands.Cog.listener()
-    async def on_message(self, message):
-        if message.author.bot:
-            return
-        self.messages += 1
+                    async with self.bot.pool.acquire() as con:
+                        data = await con.fetch("SELECT * FROM posted")
+                        posted = list(map(lambda d: d["id"], data))
+                    
+                        for post in posts:
+                            if post["name"] not in posted:
+                                embed = discord.Embed(title=post["title"], url=post["url"], description=post["selftext"] if not post["selftext"] == "" else None, color=0xFF0000)
+                                embed.set_author(name="New post on r/tekxit")
+                                embed.add_field(name="Post author", value=post["author"])
+                                try:
+                                    embed.set_image(url=post["url_overridden_by_dest"])
+                                except KeyError:
+                                    pass
+                                webhook = Webhook.from_url(REDDITWEBHOOK, adapter=AsyncWebhookAdapter(session))
+                                await webhook.send(embed=embed)
+                                async with self.bot.pool.acquire() as con:
+                                    await con.execute("INSERT INTO posted(id) VALUES($1)", post["name"])
+                        
 
-
-    @tasks.loop(minutes=15)
-    async def update_stats(self):
-        async with self.bot.pool.acquire() as con:
-            await con.execute("INSERT INTO stats VALUES($1, $2, $3)", datetime.datetime.utcnow(), self.members, self.messages)
-            self.messages = 0
-    
-    @update_stats.before_loop
-    async def before_update_stats(self):
-        await self.bot.wait_until_ready()
-        await asyncio.sleep(2)
 
 
 def setup(bot):
