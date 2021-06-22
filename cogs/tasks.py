@@ -18,18 +18,19 @@ class Tasks(commands.Cog):
         self.members = 0
         self.messages = 0
 
-        self.unbanloop.start()
+        self.tempinfractionloop.start()
         self.redditlog.start()
 
     @tasks.loop(minutes=1)
-    async def unbanloop(self):
+    async def tempinfractionloop(self):
         async with self.bot.pool.acquire() as con:
             if not self.guild:
                 self.guild = self.bot.get_guild(GUILDID)
             time = await con.fetchrow("SELECT(timedate) FROM tracker")
-            results = await con.fetch("SELECT(banid, uid, endtime) FROM tempbans WHERE endtime < $1 AND endtime > $2", datetime.datetime.utcnow(), time[0])
+            banresults = await con.fetch("SELECT(banid, uid, endtime) FROM tempbans WHERE endtime < $1 AND endtime > $2", datetime.datetime.utcnow(), time[0])
+            muteresults = await con.fetch("SELECT(muteid, uid, endtime) FROM tempmutes WHERE endtime < $1 AND endtime > $2", datetime.datetime.utcnow(), time[0])
 
-            for result in results:
+            for result in banresults:
                 try:
                     entry = await self.guild.fetch_ban(discord.Object(id=result[0][1]))
                     user = entry[1]
@@ -43,12 +44,29 @@ class Tasks(commands.Cog):
                     await self.bot.logchannel.send(embed=embed)
                 except Exception as e:
                     print(f"Could not unban {result}", e)
+
+            for result in muteresults:
+                try:
+                    member = self.guild.get_member(result[0][1])
+                    muterole = self.guild.get_role(MUTEDROLE)
+                    await member.remove_roles(muterole)
+
+                    embed = discord.Embed(color=discord.Color.green())
+                    embed.set_footer(
+                        text=f'Action performed by bot | Case {result[0][0]}')
+                    embed.set_author(name=f'Case {result[0][0]} | Unmute | {member}')
+                    embed.add_field(name=f'Reason', value='Temporary mute expired', inline=False)
+                    await self.bot.logchannel.send(embed=embed)
+                except Exception as e:
+                    print(f"Could not unmute {result}", e)
             await con.execute("UPDATE tracker SET timedate = $1", datetime.datetime.utcnow())
 
-    @unbanloop.before_loop
-    async def before_unbanloop(self):
+    @tempinfractionloop.before_loop
+    async def before_tempinfractionloop(self):
         await self.bot.wait_until_ready()
         await asyncio.sleep(2)
+
+    
 
     @tasks.loop(minutes=1)
     async def redditlog(self):

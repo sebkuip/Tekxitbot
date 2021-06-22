@@ -4,6 +4,9 @@ from discord.ext import commands
 import re
 import datetime
 import typing
+import asyncio
+
+from discord.ext.commands.errors import BadArgument
 
 from config import *
 
@@ -50,6 +53,30 @@ class Moderation(commands.Cog):
                 embed.add_field(name="Text", value=discord.utils.escape_markdown(m.content))
                 embed.set_footer(text=f"Deleted at {datetime.datetime.utcnow().strftime('%a %b %d %H:%M:%S %Z')}")
                 await self.bot.logchannel.send(f"Found spam in <#{m.channel.id}> by <@{m.author.id}>:", embed=embed)
+
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+
+        muterole = member.guild.get_role(MUTEDROLE)
+
+        async with self.bot.pool.aquire() as con:
+            mutedata = await con.fetch("SELECT active FROM mutes where uid = $1", member.id)
+            tempmutedata = await con.fetch("SELECT endtime from tempmutes where uid  = $1", member.id)
+            
+            if mutedata:
+                for mute in mutedata:
+                    if mute["active"]:
+                        await member.add_roles(muterole)
+                        await self.bot.logchannel.send(f"user {member.mention} ({member.id}) joined with active mute.")
+                        return
+                
+            elif tempmutedata:
+                for mute in tempmutedata:
+                    if mute["endtime"] < datetime.datetime.utcnow():
+                        await member.add_roles(muterole)
+                        await self.bot.logchannel.send(f"user {member.mention} ({member.id}) joined with active mute.")
+                        return
+
 
     @commands.command(help='Kicks the specified member for the specified reason')
     @commands.has_permissions(kick_members=True)
@@ -119,7 +146,7 @@ class Moderation(commands.Cog):
         await ctx.guild.ban(member, reason=reason, delete_message_days=0)
         async with self.bot.pool.acquire() as con:
             try:
-                result = con.fetchrow("INSERT INTO bans(uid, executor, timedate, reason) VALUES($1, $2, "
+                result = await con.fetchrow("INSERT INTO bans(uid, executor, timedate, reason) VALUES($1, $2, "
                                                     "CURRENT_TIMESTAMP(1), $3) RETURNING banid", member.id, ctx.author.id, reason)
                 banid = result[0]
             except Exception as error:
@@ -266,9 +293,13 @@ class Moderation(commands.Cog):
             await ctx.send("You cannot mute this person")
             return
 
-        muterole = ctx.guild.get_role(606922464861356033)
+        muterole = ctx.guild.get_role(MUTEDROLE)
 
         await member.add_roles(muterole)
+
+        async with self.bot.pool.acquire() as con:
+            muteid = await con.fetchrow("INSERT INTO mutes(uid, executor, timedate, reason, active) VALUES($1, $2, $3, $4, $5) RETURNING muteid", member.id, ctx.author.id, datetime.datetime.utcnow(), reason, True)
+            muteid = muteid["muteid"]
 
         embed = discord.Embed(
             title=f'You have been muted in {ctx.guild.name}', color=discord.Color.green())
@@ -284,38 +315,142 @@ class Moderation(commands.Cog):
 
         embed = discord.Embed(color=discord.Color.green())
         embed.set_footer(text=f'Action performed by {ctx.author}')
-        embed.set_author(name=f'Mute | {member}')
+        embed.set_author(name=f'Case {muteid} | Mute | {member}')
 
         if reason:
             embed.add_field(name=f'Reason', value=f'{reason}', inline=False)
 
         await ctx.send(embed=embed)
         await self.bot.logchannel.send(embed=embed)
-
-    @commands.command(help='Unmutes the person', aliases=['unstfu'])
+    
+    @commands.command(help='mutes the specified member for the specified reason for a specified time')
     @commands.has_permissions(manage_messages=True)
-    async def unmute(self, ctx, member: discord.Member, *, reason=None):
+    async def tempmute(self, ctx, member: typing.Union[discord.Member, discord.User, discord.Object], time, *, reason=None):
         await ctx.message.delete()
+        if isinstance(member, discord.Member):
+            if member.top_role >= ctx.author.top_role:
+                await ctx.send("You cannot mute this person")
+                return
+        else:
+            member = member if isinstance(member, discord.User) else await self.bot.fetch_user(member.id)
 
-        muterole = ctx.guild.get_role(606922464861356033)
+        if not member:
+            raise commands.BadArgument("User was not found")
 
-        await member.remove_roles(muterole)
+        weeks = int((re.findall(r"(\d+)w", time) or "0")[0])
+        days = int((re.findall(r"(\d+)d", time) or "0")[0])
+        hours = int((re.findall(r"(\d+)h", time) or "0")[0])
+        minutes = int((re.findall(r"(\d+)m", time) or "0")[0])
 
-        embed = discord.Embed(
-            title=f'You have been unmuted in {ctx.guild.name}', color=discord.Color.green())
+        timedelta = datetime.timedelta(
+            weeks=weeks,
+            days=days,
+            hours=hours,
+            minutes=minutes
+        )
+        endtime = datetime.datetime.utcnow() + timedelta
+
+        embed = discord.Embed(title=f'You have been temporary muted from {ctx.guild.name}. You have been muted until {endtime}.',
+                              color=discord.Color.green())
         if reason:
             embed.add_field(name='Reason:', value=f'{reason}', inline=False)
+        embed.add_field(name='If you have questions:', value=f'If you have questions about this action, or would like '
+                                                             f'to appeal it. Please contact the staff team. '
+                                                             f'You were muted by {ctx.author.mention}', inline=False)
         try:
             await member.send(embed=embed)
         except discord.Forbidden:
             await ctx.send('Could not send DM to user')
 
-        embed = discord.Embed(color=discord.Color.green())
-        embed.set_footer(text=f'Action performed by {ctx.author}')
-        embed.set_author(name=f'Unmute | {member}')
+        muterole = ctx.guild.get_role(MUTEDROLE)
+        await member.add_roles(muterole)
 
+        async with self.bot.pool.acquire() as con:
+            try:
+                result = await con.fetchrow("INSERT INTO tempmutes(uid, executor, timedate, endtime, reason) VALUES($1, $2, "
+                                                    "CURRENT_TIMESTAMP(1), $3, $4) RETURNING muteid", member.id, ctx.author.id, endtime, reason)
+                muteid = result[0]
+            except Exception as error:
+                print(error)
+
+        embed = discord.Embed(title=f' ', description=f' ',
+                              color=discord.Color.green())
+        embed.set_footer(
+            text=f'Action performed by {ctx.author} | Case {muteid}')
+        embed.set_author(name=f'Case {muteid} | Temp mute | {member}')
+        embed.add_field(name='End time', value=f'{endtime}', inline=False)
         if reason:
             embed.add_field(name=f'Reason', value=f'{reason}', inline=False)
+        await ctx.send(embed=embed)
+        await self.bot.logchannel.send(embed=embed)
+
+    @commands.command(help='Unmutes the person', aliases=['unstfu'])
+    @commands.has_permissions(manage_messages=True)
+    async def unmute(self, ctx, id: int, *, reason=None):
+        await ctx.message.delete()
+
+        def check(m):
+                return m.author == ctx.author and m.channel == ctx.channel
+        
+        await ctx.send("Is the mute temporary?")
+        try:
+            temp = await self.bot.wait_for("message", check=check, timeout=10)
+            if temp.content.lower() in ("yes, true, 1"):
+                temp = True
+            else:
+                temp = False
+            print(temp)
+        except asyncio.TimeoutError:
+            await ctx.send("Didn't receive an answer in time, aborting")
+            return
+
+        try:
+            async with self.bot.pool.acquire() as con:
+                if temp:
+                    userid = await con.fetchrow("UPDATE tempmutes SET endtime = $1 WHERE muteid = $2 RETURNING uid", datetime.datetime.utcnow(), id)
+                    if not userid:
+                        await ctx.send("Couldn't find database entry. Continuing")
+                    else:
+                        userid = userid["uid"]
+                else:
+                    userid = await con.fetchrow("UPDATE mutes SET active = $1 WHERE muteid = $2 RETURNING uid", False, id)
+                    if not userid:
+                        await ctx.send("Couldn't find database entry. Continuing")
+                    else:
+                        userid = userid["uid"]
+                if userid:
+                    member = ctx.guild.get_member(userid)
+        except Exception as e:
+            print(e)
+        try:
+            if member:
+                muterole = ctx.guild.get_role(MUTEDROLE)
+
+                await member.remove_roles(muterole)
+
+                embed = discord.Embed(
+                    title=f'You have been unmuted in {ctx.guild.name}', color=discord.Color.green())
+                if reason:
+                    embed.add_field(name='Reason:', value=f'{reason}', inline=False)
+                try:
+                    await member.send(embed=embed)
+                except discord.Forbidden:
+                    await ctx.send('Could not send DM to user')
+        except:
+            pass
+
+        try:
+            embed = discord.Embed(color=discord.Color.green())
+            embed.set_footer(text=f'Action performed by {ctx.author}')
+            if member:
+                embed.set_author(name=f'Unmute | {member}')
+            else:
+                embed.set_author(name=f'Unmute | {id}')
+
+            if reason:
+                embed.add_field(name=f'Reason', value=f'{reason}', inline=False)
+        except:
+            pass
 
         await ctx.send(embed=embed)
         await self.bot.logchannel.send(embed=embed)
