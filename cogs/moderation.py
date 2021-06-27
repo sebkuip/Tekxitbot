@@ -59,7 +59,7 @@ class Moderation(commands.Cog):
 
         muterole = member.guild.get_role(MUTEDROLE)
 
-        async with self.bot.pool.aquire() as con:
+        async with self.bot.pool.acquire() as con:
             mutedata = await con.fetch("SELECT active FROM mutes where uid = $1", member.id)
             tempmutedata = await con.fetch("SELECT endtime from tempmutes where uid  = $1", member.id)
             
