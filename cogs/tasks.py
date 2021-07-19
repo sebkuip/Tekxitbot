@@ -87,11 +87,12 @@ class Tasks(commands.Cog):
                     
                         for post in posts:
                             if post["name"] not in posted:
-                                embed = discord.Embed(title=post["title"], url=post["url"], description=post["selftext"] if not post["selftext"] == "" else None, color=0xFF0000)
+                                embed = discord.Embed(title=post["title"], url="https://www.reddit.com" + post["permalink"], description=post["selftext"] if not post["selftext"] == "" else None, color=0xFF0000)
                                 embed.set_author(name="New post on r/tekxit")
                                 embed.add_field(name="Post author", value=post["author"])
                                 try:
-                                    embed.set_image(url=post["url_overridden_by_dest"])
+                                    if not post["crosspost_parent"]:
+                                        embed.set_image(url=post["url_overridden_by_dest"])
                                 except KeyError:
                                     pass
                                 webhook = Webhook.from_url(REDDITWEBHOOK, adapter=AsyncWebhookAdapter(session))
