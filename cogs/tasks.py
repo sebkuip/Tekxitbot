@@ -66,7 +66,6 @@ class Tasks(commands.Cog):
         await self.bot.wait_until_ready()
         await asyncio.sleep(2)
 
-    
 
     @tasks.loop(minutes=1)
     async def redditlog(self):
