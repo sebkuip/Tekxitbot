@@ -2,7 +2,6 @@ import random
 import typing
 
 import discord
-import wikia
 from discord.ext import commands
 
 
@@ -49,30 +48,13 @@ class Commands(commands.Cog):
         embed = discord.Embed(title=f'@someone', description=random.choice(members).mention)
         await ctx.send(embed=embed)
 
-    @commands.command(help='Searched the Tekxit wiki')
-    async def wiki(self, ctx, *, wiki=None):
-        if not wiki:
-            await ctx.send('The Tekxit wiki can be found at:\nhttps://tekxit.fandom.com/wiki/Tekxit_Wiki')
-        else:
-            async with ctx.typing():
-                try:
-                    summary = wikia.summary("tekxit", wiki)
-                    page = wikia.page("tekxit", wiki)
-                    link = page.url
-                    embed = discord.Embed(title=f'{wiki} | Tekxit wiki', color=discord.Color.blurple())
-                    embed.add_field(name=link, value=summary)
-                    embed.set_footer(text='If you want to edit this page, click the link at the top of this message')
-                    await ctx.send(embed=embed)
-                except Exception as e:
-                    raise e
-
     @commands.command(help='show someone\'s profile picture', name='pfp')
     async def profilepicture(self, ctx, member: typing.Optional[typing.Union[discord.User, discord.Object]]):
         if not member:
             member = ctx.author
         elif isinstance(member, discord.Object):
             member = self.bot.get_user(member.id) or await self.bot.fetch_user(member.id)
-        pic = member.avatar_url
+        pic = member.avatar.url
         await ctx.send(pic)
 
     @commands.command(help='Make a poll with yes or no, or up to 10 custom answers')

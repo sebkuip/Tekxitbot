@@ -1,11 +1,10 @@
 import discord
-from discord import Webhook, AsyncWebhookAdapter
+from discord import Webhook
 from discord.ext import commands, tasks
 import datetime
 import asyncpg
 import asyncio
 import aiohttp
-from discord.webhook import WebhookAdapter
 
 from config import *
 
@@ -94,7 +93,7 @@ class Tasks(commands.Cog):
                                         embed.set_image(url=post["url_overridden_by_dest"])
                                 except KeyError:
                                     pass
-                                webhook = Webhook.from_url(REDDITWEBHOOK, adapter=AsyncWebhookAdapter(session))
+                                webhook = Webhook.from_url(REDDITWEBHOOK, session=session)
                                 await webhook.send(embed=embed)
                                 async with self.bot.pool.acquire() as con:
                                     await con.execute("INSERT INTO posted(id) VALUES($1)", post["name"])

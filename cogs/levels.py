@@ -5,10 +5,11 @@ from discord.ext import commands, tasks
 import random
 import asyncio
 import math
+import typing
 from config import *
 
 
-class Members(commands.Cog):
+class Levels(commands.Cog):
     def __init__(self, bot):
         self.bot = bot  # This is the bot instance, it lets us interact with most things
         self.chatted = {}
@@ -73,7 +74,7 @@ class Members(commands.Cog):
         message_count = data["message_count"] + 1
         
         async with self.bot.pool.acquire() as con:
-            await con.execute("UPDATE levels SET xp = $1, level = $2, message_count = $3 WHERE uid = $4", xp, level, message_count, m.author.id)
+            await con.execute("UPDATE levels SET xp = $1, level = $2, message_count = $3 WHERE uid = $4", xp, level, message_count, m.author.id)      
         
     @commands.command(help="Show xp and level of either yourself or someone else", aliases=["rank"])
     async def level(self, ctx, user: discord.Member = None):
@@ -96,7 +97,7 @@ class Members(commands.Cog):
         next_xp = self.xp_needed_for_level(data['level']+1)-self.xp_needed_for_level(data['level'])
         
         embed = discord.Embed(description=f"Rank: {rank}\nLevel: {data['level']}\nTotal XP: {data['xp']} xp", color=discord.Color.blurple())
-        embed.set_author(name=str(user), icon_url=user.avatar_url)
+        embed.set_author(name=str(user), icon_url=user.avatar.url)
         progress = math.floor(cur_xp/(next_xp/10))
         bar = ""
         for i in range(0,10):
@@ -116,6 +117,90 @@ class Members(commands.Cog):
             # await con.execute("INSERT INTO levels(uid, xp, level, message_count) VALUES($1, $2, $3, $4)", user.id, xp, level, message_count)
         await ctx.send(f"Sucessfully set data for <@{data['uid']}> to xp = {xp}, level = {level}, message_count = {message_count}")
 
+    class LeaderBoard(discord.ui.View):
+        def __init__(self, bot, ctx, page, data):
+            super().__init__()
+            self.bot = bot
+            self.ctx = ctx
+            self.page = page
+
+            self.timeout = 20
+            self.message = None
+            
+            if page == 1:
+                button = discord.utils.get(self.children, custom_id='pg_bck')
+                button.disabled = True
+
+            if len(data) < 10:
+                button = discord.utils.get(self.children, custom_id='pg_fwd')
+                button.disabled=True
+
+        async def on_timeout(self):
+            for child in self.children:
+                child.disabled = True
+            await self.message.edit(content='timed out', embed=self.message.embeds[0], view=self)
+
+        @discord.ui.button(label='<<', style=discord.ButtonStyle.blurple, custom_id='pg_bck')
+        async def page_back(self, button: discord.ui.Button, interaction: discord.Interaction):
+            if not self.ctx.author == interaction.user:
+                await interaction.response.send_message('You cannot respond to this', ephemeral=True)
+                return
+
+            if self.page == 2:
+                button.disabled = True
+            
+            self.page -= 1
+
+            offset = (self.page-1)*10
+
+            async with self.bot.pool.acquire() as con:
+                data = await con.fetch("SELECT * FROM levels ORDER BY xp DESC LIMIT 10 OFFSET $1", offset)
+            
+            embed = discord.Embed(title="Leaderboard", description=f"page {self.page}", color=discord.Color.blurple())
+            for i, entry in enumerate(data):
+                user = self.bot.get_user(entry['uid']) or await self.bot.fetch_user(entry['uid'])
+                embed.add_field(name=str(user), value=f"Rank: {i+1+(self.page-1)*10}\nLevel: {entry['level']}\nTotal XP: {entry['xp']}", inline=False)
+            if len(data) == 10:
+                forward = discord.utils.get(self.children, custom_id='pg_fwd')
+                forward.disabled = False
+            await interaction.response.edit_message(embed=embed, view=self)
+
+        @discord.ui.button(label='>>', style=discord.ButtonStyle.blurple, custom_id='pg_fwd')
+        async def page_forward(self, button: discord.ui.Button, interaction: discord.Interaction):
+            if not self.ctx.author == interaction.user:
+                await interaction.response.send_message('You cannot respond to this', ephemeral=True)
+                return
+                
+            if self.page == 1:
+                back = discord.utils.get(self.children, custom_id='pg_bck')
+                back.disabled = False
+
+            self.page += 1
+            
+            offset = (self.page-1)*10
+
+            async with self.bot.pool.acquire() as con:
+                data = await con.fetch("SELECT * FROM levels ORDER BY xp DESC LIMIT 10 OFFSET $1", offset)
+            
+            embed = discord.Embed(title="Leaderboard", description=f"page {self.page}", color=discord.Color.blurple())
+            for i, entry in enumerate(data):
+                user = self.bot.get_user(entry['uid']) or await self.bot.fetch_user(entry['uid'])
+                embed.add_field(name=str(user), value=f"Rank: {i+1+(self.page-1)*10}\nLevel: {entry['level']}\nTotal XP: {entry['xp']}", inline=False)
+            if len(data) < 10:
+                button.disabled = True
+            await interaction.response.edit_message(embed=embed, view=self)
+
+        @discord.ui.button(emoji='🗑️', style=discord.ButtonStyle.danger)
+        async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
+            if not self.ctx.author == interaction.user:
+                await interaction.response.send_message('You cannot respond to this', ephemeral=True)
+                return
+
+            self.stop()
+            await interaction.message.delete()
+            await self.ctx.message.delete()
+        
+
     @commands.command(help="shows the top 10 for chat xp", aliases=["lb"])
     async def leaderboard(self, ctx, page=1):
         page = 1 if page<1 else page
@@ -129,7 +214,8 @@ class Members(commands.Cog):
             user = self.bot.get_user(entry['uid']) or await self.bot.fetch_user(entry['uid'])
             embed.add_field(name=str(user), value=f"Rank: {i+1+(page-1)*10}\nLevel: {entry['level']}\nTotal XP: {entry['xp']}", inline=False)
 
-        await ctx.send(embed=embed)
+        lbview = self.LeaderBoard(self.bot, ctx, page, data)
+        lbview.message = await ctx.send(embed=embed, view=lbview)
 
     @commands.has_permissions(administrator=True)
     @commands.command(help="Add a role to the rewards list")
@@ -163,4 +249,4 @@ class Members(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Members(bot))
+    bot.add_cog(Levels(bot))

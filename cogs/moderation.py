@@ -41,7 +41,7 @@ class Moderation(commands.Cog):
     async def on_message(self, m):
         if not m.guild or m.author.bot or isinstance(m.author, discord.User):
             return
-        if m.author.permissions_in(m.channel).manage_messages:
+        if m.channel.permissions_for(m.author).manage_messages:
             return
         content = re.sub(r"[a-zA-Z_0-9\s]",r"", m.content)
         for letter in set(content):
