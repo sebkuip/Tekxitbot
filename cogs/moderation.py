@@ -122,7 +122,10 @@ class Moderation(commands.Cog):
 
     @commands.command(help='Bans the specified member for the specified reason')
     @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx, member: typing.Union[discord.Member, discord.User, discord.Object], *, reason=None):
+    async def ban(self, ctx, member: typing.Union[discord.Member, discord.User, discord.Object], delete_days: typing.Optional[int] = 0, *, reason=None):
+        if delete_days < 0 or delete_days > 7:
+            await ctx.send("Days to delete messages must be between 0 and 7")
+            return
         await ctx.message.delete()
 
         if isinstance(member, discord.Member):
@@ -143,7 +146,9 @@ class Moderation(commands.Cog):
             await member.send(embed=embed)
         except discord.Forbidden:
             await ctx.send('Could not send DM to user')
-        await ctx.guild.ban(member, reason=reason, delete_message_days=0)
+
+        await ctx.guild.ban(member, reason=reason, delete_message_days=delete_days)
+        
         async with self.bot.pool.acquire() as con:
             try:
                 result = await con.fetchrow("INSERT INTO bans(uid, executor, timedate, reason) VALUES($1, $2, "
@@ -166,7 +171,10 @@ class Moderation(commands.Cog):
 
     @commands.command(help='Bans the specified member for the specified reason for a specified time')
     @commands.has_permissions(administrator=True)
-    async def tempban(self, ctx, member: typing.Union[discord.Member, discord.User, discord.Object], time, *, reason=None):
+    async def tempban(self, ctx, member: typing.Union[discord.Member, discord.User, discord.Object], time, delete_days: typing.Optional[int] = 0, *, reason=None):
+        if delete_days < 0 or delete_days > 7:
+            await ctx.send("Days to delete messages must be between 0 and 7")
+            return
         await ctx.message.delete()
         if isinstance(member, discord.Member):
             if member.top_role >= ctx.author.top_role:
@@ -199,7 +207,9 @@ class Moderation(commands.Cog):
             await member.send(embed=embed)
         except discord.Forbidden:
             await ctx.send('Could not send DM to user')
-        await ctx.guild.ban(member, reason=reason, delete_message_days=1)
+
+        await ctx.guild.ban(member, reason=reason, delete_message_days=delete_days)
+
         async with self.bot.pool.acquire() as con:
             try:
                 result = await con.fetchrow("INSERT INTO tempbans(uid, executor, timedate, endtime, reason) VALUES($1, $2, "
