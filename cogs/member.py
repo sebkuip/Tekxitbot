@@ -32,6 +32,7 @@ class Members(commands.Cog):
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         # Leave message
+        self.joinchannel = member.guild.get_channel(JOINCHANNEL)
         await self.joinchannel.send(f'> <:R6:721990379158896680> ***{member}***  just left the server :slight_frown:')
 
 
