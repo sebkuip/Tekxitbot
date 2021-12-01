@@ -85,7 +85,8 @@ class Tasks(commands.Cog):
                     
                         for post in posts:
                             if post["name"] not in posted:
-                                embed = discord.Embed(title=post["title"], url="https://www.reddit.com" + post["permalink"], description=post["selftext"] if not post["selftext"] == "" else None, color=0xFF0000)
+                                description = post["selftext"][:1000] if not post["selftext"] == "" else None
+                                embed = discord.Embed(title=post["title"], url="https://www.reddit.com" + post["permalink"], description=description[:1000] + "..." if description and len(description) > 1000 else description, color=0xFF0000)
                                 embed.set_author(name="New post on r/tekxit")
                                 embed.add_field(name="Post author", value=post["author"])
                                 try:
