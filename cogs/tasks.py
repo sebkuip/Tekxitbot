@@ -1,10 +1,11 @@
+import asyncio
+import datetime
+
+import aiohttp
+import asyncpg
 import discord
 from discord import Webhook
 from discord.ext import commands, tasks
-import datetime
-import asyncpg
-import asyncio
-import aiohttp
 
 from config import *
 
@@ -26,8 +27,16 @@ class Tasks(commands.Cog):
             if not self.guild:
                 self.guild = self.bot.get_guild(GUILDID)
             time = await con.fetchrow("SELECT(timedate) FROM tracker")
-            banresults = await con.fetch("SELECT(banid, uid, endtime) FROM tempbans WHERE endtime < $1 AND endtime > $2", datetime.datetime.utcnow(), time[0])
-            muteresults = await con.fetch("SELECT(muteid, uid, endtime) FROM tempmutes WHERE endtime < $1 AND endtime > $2", datetime.datetime.utcnow(), time[0])
+            banresults = await con.fetch(
+                "SELECT(banid, uid, endtime) FROM tempbans WHERE endtime < $1 AND endtime > $2",
+                datetime.datetime.utcnow(),
+                time[0],
+            )
+            muteresults = await con.fetch(
+                "SELECT(muteid, uid, endtime) FROM tempmutes WHERE endtime < $1 AND endtime > $2",
+                datetime.datetime.utcnow(),
+                time[0],
+            )
 
             for result in banresults:
                 try:
@@ -37,9 +46,12 @@ class Tasks(commands.Cog):
 
                     embed = discord.Embed(color=discord.Color.green())
                     embed.set_footer(
-                        text=f'Action performed by bot | Case {result[0][0]}')
-                    embed.set_author(name=f'Case {result[0][0]} | Unban | {user}')
-                    embed.add_field(name=f'Reason', value='Temporary ban expired', inline=False)
+                        text=f"Action performed by bot | Case {result[0][0]}"
+                    )
+                    embed.set_author(name=f"Case {result[0][0]} | Unban | {user}")
+                    embed.add_field(
+                        name=f"Reason", value="Temporary ban expired", inline=False
+                    )
                     await self.bot.logchannel.send(embed=embed)
                 except Exception as e:
                     print(f"Could not unban {result}", e)
@@ -52,54 +64,78 @@ class Tasks(commands.Cog):
 
                     embed = discord.Embed(color=discord.Color.green())
                     embed.set_footer(
-                        text=f'Action performed by bot | Case {result[0][0]}')
-                    embed.set_author(name=f'Case {result[0][0]} | Unmute | {member}')
-                    embed.add_field(name=f'Reason', value='Temporary mute expired', inline=False)
+                        text=f"Action performed by bot | Case {result[0][0]}"
+                    )
+                    embed.set_author(name=f"Case {result[0][0]} | Unmute | {member}")
+                    embed.add_field(
+                        name=f"Reason", value="Temporary mute expired", inline=False
+                    )
                     await self.bot.logchannel.send(embed=embed)
                 except Exception as e:
                     print(f"Could not unmute {result}", e)
-            await con.execute("UPDATE tracker SET timedate = $1", datetime.datetime.utcnow())
+            await con.execute(
+                "UPDATE tracker SET timedate = $1", datetime.datetime.utcnow()
+            )
 
     @tempinfractionloop.before_loop
     async def before_tempinfractionloop(self):
         await self.bot.wait_until_ready()
         await asyncio.sleep(2)
 
-
     @tasks.loop(minutes=1)
     async def redditlog(self):
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://www.reddit.com/r/tekxit.json?sort=new") as resp:
+            async with session.get(
+                "https://www.reddit.com/r/tekxit.json?sort=new"
+            ) as resp:
                 if resp.status == 200:
                     json = await resp.json()
-                    posts = json['data']['children']
+                    posts = json["data"]["children"]
                     if not posts:
                         print(json)
                         print(posts)
-                    posts = list(map(lambda p: p['data'], posts))
+                    posts = list(map(lambda p: p["data"], posts))
                     posts.reverse()
 
                     async with self.bot.pool.acquire() as con:
                         data = await con.fetch("SELECT * FROM posted")
                         posted = list(map(lambda d: d["id"], data))
-                    
+
                         for post in posts:
                             if post["name"] not in posted:
-                                description = post["selftext"][:1000] if not post["selftext"] == "" else None
-                                embed = discord.Embed(title=post["title"], url="https://www.reddit.com" + post["permalink"], description=description[:1000] + "..." if description and len(description) > 1000 else description, color=0xFF0000)
+                                description = (
+                                    post["selftext"][:1000]
+                                    if not post["selftext"] == ""
+                                    else None
+                                )
+                                embed = discord.Embed(
+                                    title=post["title"],
+                                    url="https://www.reddit.com" + post["permalink"],
+                                    description=description[:1000] + "..."
+                                    if description and len(description) > 1000
+                                    else description,
+                                    color=0xFF0000,
+                                )
                                 embed.set_author(name="New post on r/tekxit")
-                                embed.add_field(name="Post author", value=post["author"])
+                                embed.add_field(
+                                    name="Post author", value=post["author"]
+                                )
                                 try:
                                     if not post["crosspost_parent"]:
-                                        embed.set_image(url=post["url_overridden_by_dest"])
+                                        embed.set_image(
+                                            url=post["url_overridden_by_dest"]
+                                        )
                                 except KeyError:
                                     pass
-                                webhook = Webhook.from_url(REDDITWEBHOOK, session=session)
+                                webhook = Webhook.from_url(
+                                    REDDITWEBHOOK, session=session
+                                )
                                 await webhook.send(embed=embed)
                                 async with self.bot.pool.acquire() as con:
-                                    await con.execute("INSERT INTO posted(id) VALUES($1)", post["name"])
-                        
-
+                                    await con.execute(
+                                        "INSERT INTO posted(id) VALUES($1)",
+                                        post["name"],
+                                    )
 
 
 def setup(bot):
