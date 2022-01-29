@@ -1,0 +1,6 @@
+> **How to find your technic log**
+> **--------------------------------------**
+> 1. Go into the **Launcher Options** (upper-right corner)
+> 2. On the bottom-left corner of that screen, click **"Open Logs"**
+> 3. The logs are all called **techniclauncher_YYYY-MM-DD.log**, with YYYY being the Year, MM being the Month, and DD being the day. **We need the Logs from when you were/are having your issues**.
+> 4. Send the logs into **chat**

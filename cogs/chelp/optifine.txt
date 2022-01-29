@@ -1,13 +1,13 @@
 > ❗ **If you want to add Optifine to Tekxit 3 follow these steps!**
 > --------------------------------------
 > 1. **Close** Tekxit
-> 2. Download **Optifine** from <http://optifine.net/adloadx?f=OptiFine_1.12.2_HD_U_G5.jar>
+> 2. Download **Optifine** from https://short.tekxit.xyz/of
 > 3. Open the **Technic Launcher**
 > 4. Click on the **Tekxit** modpack you're playing (Do not Launch it!)
 > 5. Go to **Modpack Options** (Top Right)
 > 6. Click on **Open**
 > 7. Open the **Mods** folder 
-> 8. Drop the **OptiFine_1.12.2_HD_U_G5.jar** into the **Mods** folder
+> 8. Drop the **preview_Optifine_1.12.2_HD_U_G6.pre1.jar** into the Mods folder
 > 9. **Start** Tekxit
 > You have successfully added Optifine!
 > ❤️ Still not working? Ask Staff for further support!

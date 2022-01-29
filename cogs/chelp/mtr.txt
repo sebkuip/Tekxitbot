@@ -1,0 +1,13 @@
+> **If you are experiencing slow download speeds, please follow these steps so we can investigate why you are having slowdowns**
+> **--------------------------------------**
+> 1. Download **WinMTR**: https://short.tekxit.xyz/mtr
+> 2. **Open** the program you just downloaded
+> 3. At the top there is a box named "Host". enter **tekxit.xyz**
+> 4. Press **start**
+> 5. You should see a list appear below, at the top your **local IP** and at the bottom **v2202005122074118457.ultrasrv.de**
+> 6. Let it run until at least **500 packets are sent** (as seen under sent)
+> 7. Once done, press **stop**
+> 8. You can give us the results by pressing **Copy Text to clipboard**
+> 9. **Paste** your results in this channel
+> **--------------------------------------**
+> ❤️ Still not working? Ask **staff** for further support!
