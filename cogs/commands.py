@@ -10,6 +10,7 @@ class Commands(commands.Cog):
         self.bot = bot  # This is the bot instance, it lets us interact with most things
 
     @commands.command(help="Shows the latency of the bot")
+    @commands.is_owner()
     async def ping(self, ctx):
         await ctx.send(f"My ping is " + str(round(self.bot.latency, 5) * 1000) + "ms")
 
